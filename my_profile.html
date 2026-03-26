@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PingMe — My Profile</title>
+  <link rel="stylesheet" href="my_profile.css" />
+</head>
+<body>
+
+  <div class="card">
+
+    <div class="logo">
+      <div class="logo-dot"></div>
+      <span class="logo-text">PingMe</span>
+    </div>
+
+    <!-- Avatar -->
+    <div class="avatar-wrap">
+      <div class="avatar" title="Change photo">
+        <!-- Default person icon -->
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+             stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="8" r="4"/>
+          <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+        </svg>
+        <!-- Populated when user picks a file -->
+        <img id="avatar-img" alt="Profile photo" />
+      </div>
+      <span class="avatar-hint">Change photo</span>
+      <input id="avatar-input" type="file" accept="image/*" style="display:none" />
+    </div>
+
+    <p class="profile-name">Your Name</p>
+    <p class="profile-handle">@yourhandle</p>
+
+    <form>
+      <div class="field">
+        <label for="display-name">Display name</label>
+        <input id="display-name" type="text" placeholder="Your Name" autocomplete="name" />
+      </div>
+
+      <div class="field">
+        <label for="bio">Bio</label>
+        <textarea id="bio" placeholder="Tell people a little about yourself…"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="location">Location</label>
+        <input id="location" type="text" placeholder="Sofia, Bulgaria" />
+      </div>
+
+      <button type="submit">Save changes</button>
+    </form>
+
+  </div>
+
+  <script>
+    const avatarWrap  = document.querySelector('.avatar');
+    const avatarInput = document.getElementById('avatar-input');
+    const avatarImg   = document.getElementById('avatar-img');
+
+    avatarWrap.addEventListener('click', () => avatarInput.click());
+
+    avatarInput.addEventListener('change', () => {
+      const file = avatarInput.files[0];
+      if (!file) return;
+      const url = URL.createObjectURL(file);
+      avatarImg.src = url;
+      avatarImg.style.display = 'block';
+      avatarWrap.querySelector('svg').style.display = 'none';
+    });
+  </script>
+
+</body>
+</html>
