@@ -1,14 +1,18 @@
 header {
   padding: 0.5rem 1.5rem;
-  border: 1px solid black;
+  border: 1px solid rgba(183, 120, 232, 0.3);
   border-radius: 50px;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  background: rgba(255, 255, 255, 0.65);
+  box-shadow: 0 4px 24px rgba(183, 120, 232, 0.1);
 }
 
 header h1 {
   margin: 0;
   font-size: 2rem;
   font-weight: 300;
+  color: #1a1a1a;
 }
 
 .main-nav {
@@ -30,10 +34,11 @@ header h1 {
   width: 250px;
   height: 100vh;
   z-index: 999;
-  background-color: rgba(255, 255, 255, 0.228);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  box-shadow: -10px 0 10px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.65);
+  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(24px);
+  border-left: 1px solid rgba(183, 120, 232, 0.2);
+  box-shadow: -8px 0 32px rgba(183, 120, 232, 0.1);
   display: none;
   flex-direction: column;
   align-items: flex-start;
@@ -51,12 +56,12 @@ nav a, .sidebar a {
   font-size: 1rem;
   letter-spacing: 0.1rem;
   text-decoration: none;
-  color: black;
+  color: #1a1a1a;
   text-transform: uppercase;
   transition: color 0.2s ease;
 }
 
-nav a:hover, .sidebar a:hover { color: #c5c5c5; }
+nav a:hover, .sidebar a:hover { color: #B778E8; }
 
 .btn-signin1,
 .btn-signin2 {
@@ -66,22 +71,30 @@ nav a:hover, .sidebar a:hover { color: #c5c5c5; }
   font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.4s ease, color 0.4s ease;
+  transition: background 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.btn-signin1 { background-color: rgb(156, 156, 156); color: black; }
-.btn-signin2 { background-color: rgb(217, 217, 217); }
+.btn-signin1 {
+  background: #B778E8;
+  color: #fff;
+  box-shadow: 0 4px 18px rgba(183, 120, 232, 0.35);
+}
 
-.btn-signin1:hover,
+.btn-signin1:hover {
+  background: #a460d8;
+  box-shadow: 0 6px 24px rgba(183, 120, 232, 0.45);
+}
+
+.btn-signin2 {
+  background: rgba(183, 120, 232, 0.12);
+  color: #1a1a1a;
+}
+
 .btn-signin2:hover {
-  background-color: black;
-  color: white;
+  background: rgba(183, 120, 232, 0.25);
 }
 
-.space_buttons {
-  display: flex;
-  gap: 1rem;
-}
+.space_buttons { display: flex; gap: 1rem; }
 
 .menu-button { display: none; }
 
