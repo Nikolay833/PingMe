@@ -96,14 +96,33 @@ nav a:hover, .sidebar a:hover { color: #B778E8; }
 
 .space_buttons { display: flex; gap: 1rem; }
 
+.sidebar .space_buttons {
+  flex-wrap: wrap;
+}
+
+.sidebar .btn-signin1,
+.sidebar .btn-signin2 {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0.8rem 1rem;
+  text-align: center;
+}
+
+@media (max-width: 300px) {
+  .sidebar .space_buttons {
+    flex-direction: column;
+  }
+}
+
 .menu-button { display: none; }
 
 @media (max-width: 800px) {
-  .hideOnMobile,
-  .btn-signin1,
-  .btn-signin2 { display: none; }
+  .hideOnMobile { display: none; }
 
   .menu-button { display: block; }
+
+  .sidebar .btn-signin1,
+  .sidebar .btn-signin2 { display: inline-block; }
 }
 
 @media (max-width: 400px) {
