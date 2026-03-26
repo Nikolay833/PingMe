@@ -5,8 +5,50 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PingMe — Sign In</title>
   <link rel="stylesheet" href="login.css" />
+  <link rel="stylesheet" href="../Homepage/navbar.css" />
+  <style>
+    .navbar-wrap { position: fixed; top: 1.5rem; left: 0; width: 100%; display: flex; justify-content: center; z-index: 100; }
+    body { padding-top: 6rem; align-items: flex-start; overflow-y: auto; }
+  </style>
 </head>
 <body>
+
+<ul class="sidebar">
+  <li onclick="hideSidebar()">
+    <svg xmlns="http://www.w3.org/2000/svg" height="34px" viewBox="0 -960 960 960" width="34px" fill="#000000"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
+  </li>
+  <li><a href="../Homepage/index.html">Home</a></li>
+  <li><a href="#">About</a></li>
+  <li><a href="#">Contact</a></li>
+  <li><a href="#" onclick="goToAccount(event)">Account</a></li>
+  <li>
+    <div class="space_buttons">
+      <button class="btn-signin1" onclick="location.href='login.html'">Register</button>
+    </div>
+  </li>
+</ul>
+
+<div class="navbar-wrap">
+  <header>
+    <nav>
+      <ul class="main-nav">
+        <li><h1>PingMe</h1></li>
+        <li class="hideOnMobile"><a href="../Homepage/index.html">Home</a></li>
+        <li class="hideOnMobile"><a href="#">About</a></li>
+        <li class="hideOnMobile"><a href="#">Contact</a></li>
+        <li class="hideOnMobile"><a href="#" onclick="goToAccount(event)">Account</a></li>
+        <li>
+          <div class="space_buttons hideOnMobile">
+            <button class="btn-signin1" onclick="location.href='login.html'">Register</button>
+          </div>
+        </li>
+        <li class="menu-button" onclick="showSidebar()">
+          <svg xmlns="http://www.w3.org/2000/svg" height="34px" viewBox="0 -960 960 960" width="34px" fill="#000000"><path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z"/></svg>
+        </li>
+      </ul>
+    </nav>
+  </header>
+</div>
 
   <div class="card">
     <div class="logo">
@@ -77,6 +119,19 @@
         errorEl.style.display = 'block';
       }
     });
+  </script>
+
+  <script>
+    function showSidebar() { document.querySelector('.sidebar').style.display = 'flex'; }
+    function hideSidebar() { document.querySelector('.sidebar').style.display = 'none'; }
+    window.addEventListener('resize', () => { if (window.innerWidth > 800) hideSidebar(); });
+    function goToAccount(e) {
+      e.preventDefault();
+      const dest = localStorage.getItem('token')
+        ? '../My Profile/my_profile.html'
+        : '../Login/signin.html';
+      window.location.href = dest;
+    }
   </script>
 
 </body>

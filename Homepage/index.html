@@ -15,8 +15,8 @@
   </li>
   <li><a href="#">Home</a></li>
   <li><a href="#">About</a></li>
-  <li><a href="#">Services</a></li>
   <li><a href="#">Contact</a></li>
+  <li><a href="#" onclick="goToAccount(event)">Account</a></li>
   <li>
     <div class="space_buttons">
       <button class="btn-signin2">Tutorials</button>
@@ -34,8 +34,8 @@
           <li><h1>PingMe</h1></li>
           <li class="hideOnMobile"><a href="#">Home</a></li>
           <li class="hideOnMobile"><a href="#">About</a></li>
-          <li class="hideOnMobile"><a href="#">Services</a></li>
           <li class="hideOnMobile"><a href="#">Contact</a></li>
+          <li class="hideOnMobile"><a href="#" onclick="goToAccount(event)">Account</a></li>
           <li>
             <div class="space_buttons hideOnMobile">
               <button class="btn-signin2">Tutorials</button>
@@ -54,7 +54,7 @@
   <section class="hero">
     <div class="hero-badge">Now live &mdash; PingMe v1.0</div>
     <h2>Seek what,<br>can't<span> be searched</span></h2>
-    <p>PingMe lets you send instant pings, share updates, and keep your team in sync &mdash; all in one place.</p>
+    <p>PingMe connects curious travelers with the last living carriers of irreplaceable local knowledge — before that knowledge disappears forever.</p>
     <div class="hero-actions">
       <button class="btn-primary" onclick="location.href='../Login/signin.html'">Get started free</button>
       <button class="btn-secondary">See how it works</button>
@@ -149,7 +149,6 @@
       <div class="footer-col">
         <h4>Company</h4>
         <a href="#">About</a>
-        <a href="#">Services</a>
         <a href="#">Contact</a>
       </div>
       <div class="footer-col">
@@ -175,4 +174,11 @@
   window.addEventListener('resize', () => {
     if (window.innerWidth > 800) hideSidebar();
   });
+  function goToAccount(e) {
+    e.preventDefault();
+    const dest = localStorage.getItem('token')
+      ? '../My Profile/my_profile.html'
+      : '../Login/signin.html';
+    window.location.href = dest;
+  }
 </script>
