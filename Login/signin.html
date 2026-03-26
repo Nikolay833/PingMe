@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PingMe — Sign In</title>
+  <link rel="stylesheet" href="login.css" />
+</head>
+<body>
+
+  <div class="card">
+    <div class="logo">
+      <div class="logo-dot"></div>
+      <span class="logo-text">PingMe</span>
+    </div>
+
+    <h1>Welcome back</h1>
+    <p class="subtitle">Sign in to your account.</p>
+
+    <p id="form-error"   style="color:#c0392b;font-size:0.82rem;margin-bottom:0.75rem;display:none;"></p>
+    <p id="form-success" style="color:#27ae60;font-size:0.82rem;margin-bottom:0.75rem;display:none;"></p>
+
+    <form id="signin-form">
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" type="email" placeholder="alex@example.com" autocomplete="email" required />
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" type="password" placeholder="••••••••" autocomplete="current-password" required />
+      </div>
+
+      <button type="submit">Sign in</button>
+    </form>
+
+    <p class="signin-link">Don't have an account? <a href="login.html">Create one</a></p>
+  </div>
+
+  <script>
+    const form    = document.getElementById('signin-form');
+    const errorEl = document.getElementById('form-error');
+    const successEl = document.getElementById('form-success');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorEl.style.display   = 'none';
+      successEl.style.display = 'none';
+
+      try {
+        const res  = await fetch('http://localhost:3000/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email:    document.getElementById('email').value,
+            password: document.getElementById('password').value,
+          }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          errorEl.textContent   = data.error;
+          errorEl.style.display = 'block';
+        } else {
+          localStorage.setItem('token',     data.token);
+          localStorage.setItem('user_id',   data.user.id);
+          localStorage.setItem('user_name', data.user.name);
+          localStorage.setItem('user_role', data.user.role);
+
+          successEl.textContent   = 'Signed in! Redirecting...';
+          successEl.style.display = 'block';
+          setTimeout(() => window.location.href = '../My Profile/my_profile.html', 1000);
+        }
+      } catch {
+        errorEl.textContent   = 'Could not reach the server. Make sure it is running.';
+        errorEl.style.display = 'block';
+      }
+    });
+  </script>
+
+</body>
+</html>
