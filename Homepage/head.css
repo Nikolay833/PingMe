@@ -145,7 +145,7 @@ body::after {
 .marquee-track {
   display: flex;
   width: max-content;
-  animation: scroll 12s infinite linear;
+  animation: scroll 17s infinite linear;
 }
 
 .group {

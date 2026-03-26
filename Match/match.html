@@ -26,13 +26,12 @@
     <svg xmlns="http://www.w3.org/2000/svg" height="34px" viewBox="0 -960 960 960" width="34px" fill="#000000"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
   </li>
   <li><a href="../Homepage/index.html">Home</a></li>
+  <li><a href="#">Match</a></li>
+  <li><a href="#" onclick="goToAccount(event)">Account</a></li>
   <li><a href="#">About</a></li>
-  <li><a href="#">Services</a></li>
-  <li><a href="#">Contact</a></li>
   <li>
     <div class="space_buttons">
-      <button class="btn-signin2">Tutorials</button>
-      <button class="btn-signin1" onclick="location.href='../Login/login.html'">Sign In</button>
+      <button class="btn-signin1" onclick="location.href='../Login/signin.html'">Sign In</button>
     </div>
   </li>
 </ul>
@@ -45,13 +44,12 @@
         <ul class="main-nav">
           <li><img src="../NavBar logos/ChatGPT Image Mar 26, 2026, 11_38_51 PM.png" alt="PingMe" class="nav-logo"></li>
           <li class="hideOnMobile"><a href="../Homepage/index.html">Home</a></li>
+          <li class="hideOnMobile"><a href="#">Match</a></li>
+          <li class="hideOnMobile"><a href="#" onclick="goToAccount(event)">Account</a></li>
           <li class="hideOnMobile"><a href="#">About</a></li>
-          <li class="hideOnMobile"><a href="#">Services</a></li>
-          <li class="hideOnMobile"><a href="#">Contact</a></li>
           <li>
             <div class="space_buttons hideOnMobile">
-              <button class="btn-signin2">Tutorials</button>
-              <button class="btn-signin1" onclick="location.href='../Login/login.html'">Sign In</button>
+              <button class="btn-signin1" onclick="location.href='../Login/signin.html'">Sign In</button>
             </div>
           </li>
           <li class="menu-button" onclick="showSidebar()">
@@ -100,6 +98,12 @@
   window.addEventListener('resize', () => {
     if (window.innerWidth > 800) hideSidebar();
   });
+  function goToAccount(e) {
+    e.preventDefault();
+    window.location.href = localStorage.getItem('token')
+      ? '../My Profile/my_profile.html'
+      : '../Login/signin.html';
+  }
 </script>
 
 </body>
