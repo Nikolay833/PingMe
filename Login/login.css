@@ -61,23 +61,13 @@ body::after {
 
 .logo {
   display: flex;
-  align-items: center;
-  gap: 9px;
+  justify-content: center;
   margin-bottom: 1.25rem;
 }
 
-.logo-dot {
-  width: 28px;
-  height: 28px;
-  background: #B778E8;
-  border-radius: 7px;
-}
-
-.logo-text {
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: #1a1a1a;
-  letter-spacing: -0.02em;
+.card-logo {
+  height: 48px;
+  width: auto;
 }
 
 h1 {
