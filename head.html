@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PingMe</title>
+  <link rel="stylesheet" href="navbar.css">
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+<ul class="sidebar">
+  <li onclick="hideSidebar()">
+    <svg xmlns="http://www.w3.org/2000/svg" height="34px" viewBox="0 -960 960 960" width="34px" fill="#000000"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
+  </li>
+  <li><a href="#">Home</a></li>
+  <li><a href="#">About</a></li>
+  <li><a href="#">Services</a></li>
+  <li><a href="#">Contact</a></li>
+  <li>
+    <div class="space_buttons">
+      <button class="btn-signin2">Tutorials</button>
+      <button class="btn-signin1">Sign In</button>
+    </div>
+  </li>
+</ul>
+
+<header>
+  <nav>
+    <ul class="main-nav">
+      <li><h1>PingMe</h1></li>
+      <li class="hideOnMobile"><a href="#">Home</a></li>
+      <li class="hideOnMobile"><a href="#">About</a></li>
+      <li class="hideOnMobile"><a href="#">Services</a></li>
+      <li class="hideOnMobile"><a href="#">Contact</a></li>
+      <li>
+        <div class="space_buttons hideOnMobile">
+          <button class="btn-signin2">Tutorials</button>
+          <button class="btn-signin1">Sign In</button>
+        </div>
+      </li>
+      <li class="menu-button" onclick="showSidebar()">
+        <svg xmlns="http://www.w3.org/2000/svg" height="34px" viewBox="0 -960 960 960" width="34px" fill="#000000"><path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z"/></svg>
+      </li>
+    </ul>
+  </nav>
+</header>
+
+<script>
+  function showSidebar() {
+    document.querySelector('.sidebar').style.display = 'flex';
+  }
+  function hideSidebar() {
+    document.querySelector('.sidebar').style.display = 'none';
+  }
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 800) hideSidebar();
+  });
+</script>
