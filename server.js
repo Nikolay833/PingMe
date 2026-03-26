@@ -9,6 +9,7 @@ const sessionsRouter = require('./server/routes/sessions');
 const bookingsRouter = require('./server/routes/bookings');
 const reviewsRouter  = require('./server/routes/reviews');
 const authRouter     = require('./server/routes/auth');
+const profileRouter  = require('./server/routes/profile');
 const uploadRouter   = require('./server/routes/upload');
 const adminRouter    = require('./server/routes/admin');
 const aiRouter       = require('./server/routes/ai');
@@ -24,13 +25,13 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Routes
+app.use('/api/auth',     authRouter);
+app.use('/api/profile',  profileRouter);
+app.use('/api/upload',   uploadRouter);
 app.use('/api/legends',  legendsRouter);
 app.use('/api/sessions', sessionsRouter);
 app.use('/api/bookings', bookingsRouter);
 app.use('/api/reviews',  reviewsRouter);
-app.use('/api/auth',     authRouter);
-app.use('/api/signup',   authRouter);   // legacy route from login.html
-app.use('/api/upload',   uploadRouter);
 app.use('/api/admin',    adminRouter);
 app.use('/api/ai',       aiRouter);
 

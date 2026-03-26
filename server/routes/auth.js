@@ -82,9 +82,9 @@ router.patch('/update-traveler', authMiddleware, async (req, res) => {
   res.json({ success: true });
 });
 
-// POST /api/signup — used by login.html register form
+// POST /api/auth/signup — used by login.html register form
 router.post('/signup', async (req, res) => {
-  const { firstName, surname, email, password } = req.body;
+  const { firstName, surname, email, password, country, city, phone } = req.body;
   const name = `${firstName} ${surname}`.trim();
 
   const { data: authData, error: authError } = await supabase.auth.admin.createUser({
@@ -95,10 +95,24 @@ router.post('/signup', async (req, res) => {
 
   if (authError) return res.status(400).json({ error: authError.message });
 
-  await supabase.from('profiles').insert({ id: authData.user.id, role: 'traveler', name });
-  await supabase.from('travelers').insert({ id: authData.user.id });
+  await supabase.from('profiles').insert({
+    id: authData.user.id,
+    role: 'traveler',
+    name,
+    country,
+    city,
+    phone
+  });
 
-  res.json({ success: true, message: 'Account created! Redirecting...' });
+  // Auto-login to return a token
+  const { data: session, error: loginError } = await supabase.auth.signInWithPassword({ email, password });
+  if (loginError) return res.status(400).json({ error: loginError.message });
+
+  res.json({
+    success: true,
+    token: session.session.access_token,
+    user: { id: authData.user.id, email, name }
+  });
 });
 
 module.exports = router;

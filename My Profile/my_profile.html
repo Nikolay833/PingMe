@@ -56,20 +56,105 @@
   </div>
 
   <script>
+    const API = 'http://localhost:3000';
+    const token = localStorage.getItem('token');
+
+    if (!token) {
+      window.location.href = '../Login/login.html';
+    }
+
+    function authHeaders() {
+      return { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
+    }
+
+    // Load profile on page open
+    async function loadProfile() {
+      try {
+        const res  = await fetch(`${API}/api/profile`, { headers: authHeaders() });
+        const data = await res.json();
+
+        document.querySelector('.profile-name').textContent    = data.name || 'Your Name';
+        document.querySelector('.profile-handle').textContent  = '@' + (data.name || 'yourhandle').toLowerCase().replace(/\s+/g, '');
+        document.getElementById('display-name').value = data.name     || '';
+        document.getElementById('bio').value          = data.bio      || '';
+        document.getElementById('location').value     = data.location || '';
+
+        if (data.avatar_url) {
+          avatarImg.src = data.avatar_url;
+          avatarImg.style.display = 'block';
+          avatarWrap.querySelector('svg').style.display = 'none';
+        }
+      } catch (err) {
+        console.error('Failed to load profile:', err);
+      }
+    }
+
+    // Save changes
+    document.querySelector('form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = e.target.querySelector('button');
+      btn.textContent = 'Saving...';
+      btn.disabled = true;
+
+      try {
+        await fetch(`${API}/api/profile`, {
+          method: 'PATCH',
+          headers: authHeaders(),
+          body: JSON.stringify({
+            name:     document.getElementById('display-name').value,
+            bio:      document.getElementById('bio').value,
+            location: document.getElementById('location').value,
+          })
+        });
+        btn.textContent = 'Saved!';
+        setTimeout(() => { btn.textContent = 'Save changes'; btn.disabled = false; }, 2000);
+      } catch (err) {
+        btn.textContent = 'Save changes';
+        btn.disabled = false;
+        alert('Failed to save: ' + err.message);
+      }
+    });
+
+    // Avatar upload
     const avatarWrap  = document.querySelector('.avatar');
     const avatarInput = document.getElementById('avatar-input');
     const avatarImg   = document.getElementById('avatar-img');
 
     avatarWrap.addEventListener('click', () => avatarInput.click());
 
-    avatarInput.addEventListener('change', () => {
+    avatarInput.addEventListener('change', async () => {
       const file = avatarInput.files[0];
       if (!file) return;
-      const url = URL.createObjectURL(file);
-      avatarImg.src = url;
+
+      // Show preview immediately
+      avatarImg.src = URL.createObjectURL(file);
       avatarImg.style.display = 'block';
       avatarWrap.querySelector('svg').style.display = 'none';
+
+      // Upload to server
+      try {
+        const formData = new FormData();
+        formData.append('photo', file);
+
+        const res  = await fetch(`${API}/api/upload`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}` },
+          body: formData
+        });
+        const data = await res.json();
+
+        // Save URL to profile
+        await fetch(`${API}/api/profile/avatar`, {
+          method: 'PATCH',
+          headers: authHeaders(),
+          body: JSON.stringify({ avatar_url: data.url })
+        });
+      } catch (err) {
+        console.error('Avatar upload failed:', err);
+      }
     });
+
+    loadProfile();
   </script>
 
 </body>

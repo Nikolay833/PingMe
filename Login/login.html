@@ -106,7 +106,7 @@
       };
 
       try {
-        const res = await fetch('http://localhost:3000/api/signup', {
+        const res = await fetch('http://localhost:3000/api/auth/signup', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
@@ -118,9 +118,12 @@
           errorEl.textContent = data.error;
           errorEl.style.display = 'block';
         } else {
-          successEl.textContent = data.message;
+          localStorage.setItem('token',     data.token);
+          localStorage.setItem('user_id',   data.user.id);
+          localStorage.setItem('user_name', data.user.name);
+          successEl.textContent = 'Account created! Redirecting...';
           successEl.style.display = 'block';
-          setTimeout(() => window.location.href = 'my_profile.html', 1500);
+          setTimeout(() => window.location.href = '../My Profile/my_profile.html', 1500);
         }
       } catch {
         errorEl.textContent = 'Could not reach the server. Make sure it is running.';
