@@ -279,9 +279,8 @@
           headers: authHeaders(),
           body: JSON.stringify({ status })
         });
-        const item = document.getElementById(`notif-${id}`);
-        item.innerHTML = `<p class="notif-msg notif-done">${status === 'accepted' ? '✓ Accepted' : '✗ Declined'}</p>`;
-        setTimeout(() => { item.remove(); if (status === 'accepted') loadConnections(); }, 1200);
+        loadNotifications();
+        if (status === 'accepted') loadConnections();
       } catch (err) {
         console.error('Failed to respond:', err);
       }
