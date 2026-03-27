@@ -231,13 +231,18 @@
           body: formData
         });
         const data = await res.json();
+        if (!res.ok) { console.error('Upload failed:', data.error); return; }
+        console.log('Uploaded, URL:', data.url);
 
         // Save URL to profile
-        await fetch(`${API}/api/profile/avatar`, {
+        const saveRes = await fetch(`${API}/api/profile/avatar`, {
           method: 'PATCH',
           headers: authHeaders(),
           body: JSON.stringify({ avatar_url: data.url })
         });
+        const saveData = await saveRes.json();
+        if (!saveRes.ok) console.error('Avatar save failed:', saveData.error);
+        else console.log('Avatar saved successfully');
       } catch (err) {
         console.error('Avatar upload failed:', err);
       }
