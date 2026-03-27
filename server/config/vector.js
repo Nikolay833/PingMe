@@ -3,7 +3,7 @@ const { GoogleGenAI } = require('@google/genai');
 /**
  * Generates vector embeddings for the given text using Google Gemini API.
  * Uses the @google/genai library as requested.
- * Matches the vector(768) requirement of the database.
+ * Matches the vector(64) requirement of the database.
  */
 async function generateGeminiEmbedding(text) {
   const apiKey = process.env.VECTOR_API_KEY;
@@ -25,8 +25,7 @@ async function generateGeminiEmbedding(text) {
       contents: [{ parts: [{ text }] }],
       config: {
         taskType: 'RETRIEVAL_DOCUMENT',
-        outputDimensionality: 768
-
+        outputDimensionality: 64
       }
     });
 

@@ -6,7 +6,6 @@
 
 html, body {
   height: 100%;
-  overflow: hidden;
 }
 
 body {
@@ -321,4 +320,105 @@ button[type="submit"]:active {
   font-size: 0.85rem;
   color: #888;
   font-style: italic;
+}
+
+/* ── Connections circle button ── */
+.conn-btn {
+  position: fixed;
+  top: 1.4rem;
+  right: 1.5rem;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #059669;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(5, 150, 105, 0.45);
+  z-index: 200;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.conn-btn:hover {
+  background: #047857;
+  transform: scale(1.07);
+}
+
+/* ── Connections popup ── */
+.conn-popup {
+  position: fixed;
+  top: 4.5rem;
+  right: 1.5rem;
+  width: 270px;
+  background: #fff;
+  border: 1px solid rgba(5, 150, 105, 0.2);
+  border-radius: 18px;
+  padding: 1.1rem 1.25rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  z-index: 199;
+  display: none;
+}
+
+.conn-popup.open {
+  display: block;
+}
+
+.conn-popup h4 {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 0.8rem;
+}
+
+.conn-popup-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(5, 150, 105, 0.1);
+}
+
+.conn-popup-item:last-child {
+  border-bottom: none;
+}
+
+.conn-popup-name {
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.conn-popup-empty {
+  font-size: 0.82rem;
+  color: #aaa;
+  text-align: center;
+  padding: 0.4rem 0;
+}
+
+/* ── Toast ── */
+.toast {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(12px);
+  background: #059669;
+  color: #fff;
+  padding: 0.7rem 1.6rem;
+  border-radius: 50px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  box-shadow: 0 4px 20px rgba(5, 150, 105, 0.4);
+  z-index: 300;
+  opacity: 0;
+  transition: opacity 0.25s, transform 0.25s;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
 }
