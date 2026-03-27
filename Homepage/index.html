@@ -173,7 +173,10 @@
   window.addEventListener('resize', () => {
     if (window.innerWidth > 800) hideSidebar();
   });
-  if (localStorage.getItem('token')) document.querySelectorAll('.btn-signin1').forEach(b => b.closest('li').style.display = 'none');
+  if (localStorage.getItem('token')) {
+    document.querySelectorAll('.btn-signin1').forEach(b => b.closest('li').style.display = 'none');
+    document.querySelector('.btn-primary').style.display = 'none';
+  }
   function goToAccount(e) {
     e.preventDefault();
     window.location.href = localStorage.getItem('token')
