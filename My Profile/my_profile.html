@@ -116,11 +116,24 @@
     <div id="notif-list"></div>
   </div>
 
-  <!-- Connections -->
-  <div class="notif-panel" id="conn-panel" style="display:none">
-    <h3 class="notif-title">🤝 Connections</h3>
-    <div id="conn-list"></div>
+  <!-- Connections button (top-right) -->
+  <button class="conn-btn" id="conn-btn" onclick="toggleConnPopup()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+      <circle cx="9" cy="7" r="4"/>
+      <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+      <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+    </svg>
+  </button>
+
+  <!-- Connections popup -->
+  <div class="conn-popup" id="conn-popup">
+    <h4>🤝 Your Connections</h4>
+    <div id="conn-popup-list"><p class="conn-popup-empty">No connections yet.</p></div>
   </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
 
   <script>
     const API = 'http://localhost:3000';
@@ -253,8 +266,8 @@
               item.innerHTML = `
                 <p class="notif-msg"><strong>${n.sender_name}</strong> wants to connect with you</p>
                 <div class="notif-actions">
-                  <button class="notif-btn notif-accept" onclick="respondNotif('${n.id}','accepted',this)">Accept</button>
-                  <button class="notif-btn notif-decline" onclick="respondNotif('${n.id}','declined',this)">Decline</button>
+                  <button class="notif-btn notif-accept" onclick="respondNotif('${n.id}','accepted',this,'${n.sender_name}')">Accept</button>
+                  <button class="notif-btn notif-decline" onclick="respondNotif('${n.id}','declined',this,'${n.sender_name}')">Decline</button>
                   <button class="notif-btn notif-view" onclick="location.href='../Profile/profile.html?user_id=${n.sender_id}'">View Profile</button>
                 </div>
               `;
@@ -284,7 +297,7 @@
       }
     }
 
-    async function respondNotif(id, status, btn) {
+    async function respondNotif(id, status, btn, name) {
       btn.disabled = true;
       try {
         const res = await fetch(`${API}/api/notifications/${id}`, {
@@ -298,8 +311,11 @@
           btn.disabled = false;
           return;
         }
+        showToast(status === 'accepted'
+          ? `✓ You accepted ${name}'s connection request`
+          : `✗ You declined ${name}'s connection request`);
         await loadNotifications();
-        if (status === 'accepted') await loadConnections();
+        await loadConnections();
       } catch (err) {
         console.error('Failed to respond:', err);
         btn.disabled = false;
@@ -310,21 +326,20 @@
       try {
         const res = await fetch(`${API}/api/notifications/connections`, { headers: authHeaders() });
         const data = await res.json();
-        if (!Array.isArray(data) || data.length === 0) return;
+        const list = document.getElementById('conn-popup-list');
 
-        const panel = document.getElementById('conn-panel');
-        const list  = document.getElementById('conn-list');
-        panel.style.display = 'block';
+        if (!Array.isArray(data) || data.length === 0) {
+          list.innerHTML = '<p class="conn-popup-empty">No connections yet.</p>';
+          return;
+        }
+
         list.innerHTML = '';
-
         data.forEach(c => {
           const item = document.createElement('div');
-          item.className = 'notif-item';
+          item.className = 'conn-popup-item';
           item.innerHTML = `
-            <p class="notif-msg"><strong>${c.name}</strong></p>
-            <div class="notif-actions">
-              <button class="notif-btn notif-view" onclick="location.href='../Profile/profile.html?user_id=${c.user_id}'">View Profile</button>
-            </div>
+            <span class="conn-popup-name">${c.name}</span>
+            <button class="notif-btn notif-view" style="padding:0.3rem 0.75rem;font-size:0.75rem;" onclick="location.href='../Profile/profile.html?user_id=${c.user_id}'">View</button>
           `;
           list.appendChild(item);
         });
@@ -332,6 +347,25 @@
         console.error('Failed to load connections:', err);
       }
     }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    function toggleConnPopup() {
+      document.getElementById('conn-popup').classList.toggle('open');
+    }
+
+    document.addEventListener('click', e => {
+      const btn = document.getElementById('conn-btn');
+      const popup = document.getElementById('conn-popup');
+      if (!btn.contains(e.target) && !popup.contains(e.target)) {
+        popup.classList.remove('open');
+      }
+    });
 
     loadNotifications();
     loadConnections();
