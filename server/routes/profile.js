@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const supabase = require('../config/supabase');
 const { authMiddleware } = require('../middleware/auth');
+const { generateGeminiEmbedding } = require('../config/vector');
 
 // GET /api/profile — load current user's profile
 router.get('/', authMiddleware, async (req, res) => {
@@ -18,13 +19,38 @@ router.get('/', authMiddleware, async (req, res) => {
 // PATCH /api/profile — save changes
 router.patch('/', authMiddleware, async (req, res) => {
   const { name, bio, location } = req.body;
+  const userId = req.user.id;
 
-  const { error } = await supabase
+  // Update main profile
+  const { error: profileError } = await supabase
     .from('profiles')
     .update({ name, bio, location })
-    .eq('id', req.user.id);
+    .eq('id', userId);
 
-  if (error) return res.status(400).json({ error: error.message });
+  if (profileError) return res.status(400).json({ error: profileError.message });
+
+  // Update AI description if bio changed
+  if (bio && bio.trim()) {
+    (async () => {
+      try {
+        const embedding = await generateGeminiEmbedding(bio);
+        const summary = bio.length <= 100 ? bio : bio.slice(0, 97) + '...';
+
+        const { error: aiError } = await supabase
+          .from('AI_description')
+          .upsert(
+            { user_id: userId, original_description: bio, summary, embedding },
+            { onConflict: 'user_id' }
+          );
+
+        if (aiError) console.error('[PROFILE] AI_description upsert error:', aiError.message);
+        else console.log('[PROFILE] AI_description updated successfully');
+      } catch (err) {
+        console.error('[PROFILE] AI update failed:', err.message);
+      }
+    })();
+  }
+
   res.json({ success: true });
 });
 
