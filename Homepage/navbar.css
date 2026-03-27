@@ -1,11 +1,11 @@
 header {
   padding: 0.5rem 1.5rem;
-  border: 1px solid rgba(183, 120, 232, 0.3);
+  border: 1px solid rgba(5, 150, 105, 0.3);
   border-radius: 50px;
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   background: rgba(255, 255, 255, 0.65);
-  box-shadow: 0 4px 24px rgba(183, 120, 232, 0.1);
+  box-shadow: 0 4px 24px rgba(5, 150, 105, 0.1);
 }
 
 .nav-logo {
@@ -36,8 +36,8 @@ header {
   background: rgba(255, 255, 255, 0.65);
   -webkit-backdrop-filter: blur(24px);
   backdrop-filter: blur(24px);
-  border-left: 1px solid rgba(183, 120, 232, 0.2);
-  box-shadow: -8px 0 32px rgba(183, 120, 232, 0.1);
+  border-left: 1px solid rgba(5, 150, 105, 0.2);
+  box-shadow: -8px 0 32px rgba(5, 150, 105, 0.1);
   display: none;
   flex-direction: column;
   align-items: flex-start;
@@ -60,7 +60,7 @@ nav a, .sidebar a {
   transition: color 0.2s ease;
 }
 
-nav a:hover, .sidebar a:hover { color: #B778E8; }
+nav a:hover, .sidebar a:hover { color: #059669; }
 
 .btn-signin1,
 .btn-signin2 {
@@ -74,23 +74,23 @@ nav a:hover, .sidebar a:hover { color: #B778E8; }
 }
 
 .btn-signin1 {
-  background: #B778E8;
+  background: #059669;
   color: #fff;
-  box-shadow: 0 4px 18px rgba(183, 120, 232, 0.35);
+  box-shadow: 0 4px 18px rgba(5, 150, 105, 0.35);
 }
 
 .btn-signin1:hover {
-  background: #a460d8;
-  box-shadow: 0 6px 24px rgba(183, 120, 232, 0.45);
+  background: #C8502B;
+  box-shadow: 0 6px 24px rgba(5, 150, 105, 0.45);
 }
 
 .btn-signin2 {
-  background: rgba(183, 120, 232, 0.12);
+  background: rgba(5, 150, 105, 0.12);
   color: #1a1a1a;
 }
 
 .btn-signin2:hover {
-  background: rgba(183, 120, 232, 0.25);
+  background: rgba(5, 150, 105, 0.25);
 }
 
 .space_buttons { display: flex; gap: 1rem; }
