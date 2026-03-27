@@ -18,16 +18,16 @@ router.post('/', authMiddleware, upload.single('photo'), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No file provided' });
 
   const ext = req.file.originalname.split('.').pop().toLowerCase();
-  const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+  const filename = `${req.user.id}.${ext}`;
 
   const { error: uploadError } = await supabase.storage
-    .from('legend-photos')
-    .upload(filename, req.file.buffer, { contentType: req.file.mimetype });
+    .from('avatars')
+    .upload(filename, req.file.buffer, { contentType: req.file.mimetype, upsert: true });
 
   if (uploadError) return res.status(500).json({ error: uploadError.message });
 
   const { data: { publicUrl } } = supabase.storage
-    .from('legend-photos')
+    .from('avatars')
     .getPublicUrl(filename);
 
   res.json({ success: true, url: publicUrl });

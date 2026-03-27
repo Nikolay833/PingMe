@@ -14,7 +14,26 @@ router.get('/', authMiddleware, async (req, res) => {
     .single();
 
   if (error) return res.status(500).json({ error: error.message });
-  res.json(data);
+  res.json({ ...data, email: req.user.email });
+});
+
+// GET /api/profile/:userId — public profile view
+router.get('/:userId', async (req, res) => {
+  console.log('[PROFILE] Public fetch for userId:', req.params.userId);
+  const [{ data, error }, { data: authUser }] = await Promise.all([
+    supabase.from('profiles').select('name, bio, location, avatar_url, phone').eq('id', req.params.userId).maybeSingle(),
+    supabase.auth.admin.getUserById(req.params.userId)
+  ]);
+
+  if (error) {
+    console.error('[PROFILE] Supabase error:', error.message);
+    return res.status(500).json({ error: error.message });
+  }
+  if (!data) {
+    console.warn('[PROFILE] No profile found for:', req.params.userId);
+    return res.status(404).json({ error: 'Profile not found' });
+  }
+  res.json({ ...data, email: authUser?.user?.email || '' });
 });
 
 // PATCH /api/profile

@@ -76,6 +76,15 @@
     <p class="profile-name">Your Name</p>
     <p class="profile-handle">@yourhandle</p>
 
+    <div class="profile-info-row" id="profile-email-row" style="display:none">
+      <span class="profile-info-label">✉️ Email</span>
+      <span class="profile-info-value" id="profile-email"></span>
+    </div>
+    <div class="profile-info-row" id="profile-phone-row" style="display:none">
+      <span class="profile-info-label">📞 Phone</span>
+      <span class="profile-info-value" id="profile-phone"></span>
+    </div>
+
     <form>
       <div class="field">
         <label for="display-name">Display name</label>
@@ -119,11 +128,20 @@
         const res  = await fetch(`${API}/api/profile`, { headers: authHeaders() });
         const data = await res.json();
 
-        document.querySelector('.profile-name').textContent    = data.name || 'Your Name';
-        document.querySelector('.profile-handle').textContent  = '@' + (data.name || 'yourhandle').toLowerCase().replace(/\s+/g, '');
+        document.querySelector('.profile-name').textContent   = data.name || 'Your Name';
+        document.querySelector('.profile-handle').textContent = '@' + (data.name || 'yourhandle').toLowerCase().replace(/\s+/g, '');
         document.getElementById('display-name').value = data.name     || '';
         document.getElementById('bio').value          = data.bio      || '';
         document.getElementById('location').value     = data.location || '';
+
+        if (data.email) {
+          document.getElementById('profile-email').textContent = data.email;
+          document.getElementById('profile-email-row').style.display = 'flex';
+        }
+        if (data.phone) {
+          document.getElementById('profile-phone').textContent = data.phone;
+          document.getElementById('profile-phone-row').style.display = 'flex';
+        }
 
         if (data.avatar_url) {
           avatarImg.src = data.avatar_url;

@@ -147,27 +147,20 @@
         data.matches.forEach(m => {
           const card = document.createElement('div');
           card.className = 'match-card';
-          // Using style here to avoid needing separate CSS update for now, 
-          // though usually better in match.css
-          card.style.background = 'white';
-          card.style.padding = '1.5rem';
-          card.style.borderRadius = '12px';
-          card.style.boxShadow = '0 4px 15px rgba(0,0,0,0.05)';
-          card.style.display = 'flex';
-          card.style.flexDirection = 'column';
-          card.style.justifyContent = 'space-between';
 
           const similarityPercent = Math.round(m.similarity * 100);
+          const initials = m.name ? m.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() : '?';
 
           card.innerHTML = `
-            <div>
-              <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                <h3 style="margin:0; font-size:1.1rem; color:#2c3e50;">${m.name}</h3>
-                <span style="background:#f3e8ff; color:#7c3aed; font-size:0.75rem; padding:0.25rem 0.6rem; border-radius:100px; font-weight:600;">${similarityPercent}% Match</span>
-              </div>
-              <p style="color:#64748b; font-size:0.85rem; margin-top:0.8rem; line-height:1.5;">${m.summary || 'No summary available.'}</p>
+            <span class="match-badge new">${similarityPercent}% Match</span>
+            <div class="match-avatar" style="background: linear-gradient(135deg, #059669, #A7F3D0);">${initials}</div>
+            <div class="match-name">${m.name || 'Unknown'}</div>
+            ${m.location ? `<div class="match-meta">📍 ${m.location}</div>` : ''}
+            <p style="font-size:0.85rem; color:#555; line-height:1.6; margin-top:0.25rem; text-align:center;">${m.bio || m.summary || 'No bio available.'}</p>
+            <div style="display:flex; gap:0.6rem; margin-top:0.75rem; width:100%;">
+              <button class="btn-ping" style="flex:1;" onclick="alert('Connect feature coming soon!')">Connect</button>
+              <button class="btn-ping" style="flex:1; background: rgba(5,150,105,0.12); color:#059669; box-shadow:none;" onclick="location.href='../Profile/profile.html?user_id=${m.user_id}'">View Profile</button>
             </div>
-            <button style="margin-top:1.5rem; background:#7c3aed; color:white; border:none; padding:0.6rem; border-radius:6px; font-weight:500; cursor:pointer; width:100%;">Connect</button>
           `;
           matchGrid.appendChild(card);
         });

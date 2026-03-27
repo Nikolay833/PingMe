@@ -67,6 +67,24 @@ router.get('/', authMiddleware, async (req, res) => {
 
     if (matchError) return res.status(500).json({ error: matchError.message });
 
+    // Enrich matches with bio and location from profiles
+    if (matches && matches.length > 0) {
+      const userIds = matches.map(m => m.user_id);
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, bio, location')
+        .in('id', userIds);
+
+      const profileMap = {};
+      (profiles || []).forEach(p => { profileMap[p.id] = p; });
+
+      matches.forEach(m => {
+        const p = profileMap[m.user_id] || {};
+        m.bio = p.bio || '';
+        m.location = p.location || '';
+      });
+    }
+
     res.json({ success: true, matches: matches || [] });
 
   } catch (error) {

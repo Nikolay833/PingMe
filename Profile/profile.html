@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PingMe — Profile</title>
+  <link rel="icon" type="image/png" href="../NavBar logos/ChatGPT Image Mar 27, 2026, 12_07_46 PM.png">
+  <link rel="stylesheet" href="../My Profile/my_profile.css" />
+  <link rel="stylesheet" href="../Homepage/navbar.css" />
+  <style>
+    .navbar-wrap { position: fixed; top: 1.5rem; left: 0; width: 100%; display: flex; justify-content: center; z-index: 100; }
+    body { padding-top: 6rem; align-items: flex-start; overflow-y: auto; }
+    .profile-bio {
+      font-size: 0.88rem;
+      color: #555;
+      line-height: 1.65;
+      text-align: center;
+      margin: 0.25rem 0 1rem;
+      padding: 0.75rem 1rem;
+      background: rgba(5, 150, 105, 0.06);
+      border: 1px solid rgba(5, 150, 105, 0.15);
+      border-radius: 10px;
+    }
+    .profile-location {
+      text-align: center;
+      font-size: 0.82rem;
+      color: #888;
+      margin-bottom: 1rem;
+    }
+    .btn-connect {
+      width: 100%;
+      padding: 0.72rem;
+      background: #059669;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 18px rgba(5, 150, 105, 0.35);
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    }
+    .btn-connect:hover {
+      background: #047857;
+      box-shadow: 0 6px 24px rgba(5, 150, 105, 0.45);
+      transform: translateY(-1px);
+    }
+    .btn-back {
+      width: 100%;
+      padding: 0.72rem;
+      margin-top: 0.6rem;
+      background: transparent;
+      color: #059669;
+      border: 1.5px solid rgba(5, 150, 105, 0.4);
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-back:hover { background: rgba(5, 150, 105, 0.08); }
+  </style>
+</head>
+<body>
+
+<ul class="sidebar">
+  <li onclick="hideSidebar()">
+    <svg xmlns="http://www.w3.org/2000/svg" height="34px" viewBox="0 -960 960 960" width="34px" fill="#000000"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
+  </li>
+  <li><a href="../Homepage/index.html">Home</a></li>
+  <li><a href="#" onclick="goToMatch(event)">Match</a></li>
+  <li><a href="#" onclick="goToAccount(event)">Account</a></li>
+  <li><a href="../About/about.html">About</a></li>
+  <li>
+    <div class="space_buttons">
+      <button class="btn-signin1" onclick="location.href='../Login/signin.html'">Sign In</button>
+    </div>
+  </li>
+</ul>
+
+<div class="navbar-wrap">
+  <header>
+    <nav>
+      <ul class="main-nav">
+        <li><img src="../NavBar logos/ChatGPT Image Mar 27, 2026, 12_07_46 PM.png" alt="PingMe" class="nav-logo"></li>
+        <li class="hideOnMobile"><a href="../Homepage/index.html">Home</a></li>
+        <li class="hideOnMobile"><a href="#" onclick="goToMatch(event)">Match</a></li>
+        <li class="hideOnMobile"><a href="#" onclick="goToAccount(event)">Account</a></li>
+        <li class="hideOnMobile"><a href="../About/about.html">About</a></li>
+        <li>
+          <div class="space_buttons hideOnMobile">
+            <button class="btn-signin1" onclick="location.href='../Login/signin.html'">Sign In</button>
+          </div>
+        </li>
+        <li class="menu-button" onclick="showSidebar()">
+          <svg xmlns="http://www.w3.org/2000/svg" height="34px" viewBox="0 -960 960 960" width="34px" fill="#000000"><path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z"/></svg>
+        </li>
+      </ul>
+    </nav>
+  </header>
+</div>
+
+<div class="card">
+
+  <div class="logo">
+    <img src="../NavBar logos/ChatGPT Image Mar 27, 2026, 12_07_46 PM.png" alt="PingMe" class="card-logo">
+  </div>
+
+  <!-- Avatar -->
+  <div class="avatar-wrap">
+    <div class="avatar" id="avatar-circle">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+           stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8" r="4"/>
+        <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+      </svg>
+      <img id="avatar-img" alt="Profile photo" />
+    </div>
+  </div>
+
+  <p class="profile-name" id="profile-name">Loading...</p>
+  <p class="profile-handle" id="profile-handle">@...</p>
+
+  <div class="profile-info-row" id="profile-email-row" style="display:none">
+    <span class="profile-info-label">✉️ Email</span>
+    <span class="profile-info-value" id="profile-email"></span>
+  </div>
+  <div class="profile-info-row" id="profile-phone-row" style="display:none">
+    <span class="profile-info-label">📞 Phone</span>
+    <span class="profile-info-value" id="profile-phone"></span>
+  </div>
+
+  <p class="profile-location" id="profile-location" style="display:none"></p>
+  <p class="profile-bio" id="profile-bio" style="display:none"></p>
+
+  <button class="btn-connect" onclick="alert('Connect feature coming soon!')">Connect</button>
+  <button class="btn-back" onclick="history.back()">← Back to matches</button>
+
+</div>
+
+<script>
+  const API = 'http://localhost:3000';
+  const params = new URLSearchParams(window.location.search);
+  const userId = params.get('user_id');
+
+  if (!userId) {
+    window.location.href = '../Match/match.html';
+  }
+
+  async function loadProfile() {
+    try {
+      const res = await fetch(`${API}/api/profile/${userId}`);
+      if (!res.ok) throw new Error('Not found');
+      const data = await res.json();
+
+      document.getElementById('profile-name').textContent = data.name || 'Unknown';
+      document.getElementById('profile-handle').textContent = '@' + (data.name || 'unknown').toLowerCase().replace(/\s+/g, '');
+      document.title = `PingMe — ${data.name || 'Profile'}`;
+
+      if (data.email) {
+        document.getElementById('profile-email').textContent = data.email;
+        document.getElementById('profile-email-row').style.display = 'flex';
+      }
+      if (data.phone) {
+        document.getElementById('profile-phone').textContent = data.phone;
+        document.getElementById('profile-phone-row').style.display = 'flex';
+      }
+      if (data.location) {
+        const loc = document.getElementById('profile-location');
+        loc.textContent = '📍 ' + data.location;
+        loc.style.display = 'block';
+      }
+
+      if (data.bio) {
+        const bio = document.getElementById('profile-bio');
+        bio.textContent = data.bio;
+        bio.style.display = 'block';
+      }
+
+      if (data.avatar_url) {
+        const img = document.getElementById('avatar-img');
+        img.src = data.avatar_url;
+        img.style.display = 'block';
+        document.getElementById('avatar-circle').querySelector('svg').style.display = 'none';
+      }
+    } catch (err) {
+      document.getElementById('profile-name').textContent = 'Profile not found';
+    }
+  }
+
+  loadProfile();
+</script>
+
+<script>
+  function showSidebar() { document.querySelector('.sidebar').style.display = 'flex'; }
+  function hideSidebar() { document.querySelector('.sidebar').style.display = 'none'; }
+  window.addEventListener('resize', () => { if (window.innerWidth > 800) hideSidebar(); });
+  if (localStorage.getItem('token')) document.querySelectorAll('.btn-signin1').forEach(b => b.closest('li').style.display = 'none');
+  function goToAccount(e) {
+    e.preventDefault();
+    window.location.href = localStorage.getItem('token')
+      ? '../My Profile/my_profile.html'
+      : '../Login/signin.html';
+  }
+  function goToMatch(e) {
+    e.preventDefault();
+    window.location.href = localStorage.getItem('token')
+      ? '../Match/match.html'
+      : '../Login/signin.html';
+  }
+</script>
+
+</body>
+</html>

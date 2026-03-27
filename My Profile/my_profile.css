@@ -134,7 +134,32 @@ body::after {
   font-size: 0.8rem;
   color: #059669;
   font-weight: 500;
-  margin-bottom: 1.1rem;
+  margin-bottom: 0.6rem;
+}
+
+.profile-info-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  color: #555;
+  background: rgba(5, 150, 105, 0.06);
+  border: 1px solid rgba(5, 150, 105, 0.15);
+  border-radius: 8px;
+  padding: 0.4rem 0.75rem;
+  margin-bottom: 0.4rem;
+  width: 100%;
+}
+
+.profile-info-label {
+  font-weight: 600;
+  color: #888;
+  white-space: nowrap;
+}
+
+.profile-info-value {
+  color: #1a1a1a;
+  word-break: break-all;
 }
 
 /* ── Fields ── */
