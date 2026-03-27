@@ -131,7 +131,9 @@ router.patch('/:id', authMiddleware, async (req, res) => {
     );
   }
 
-  await Promise.all(updates);
+  const results = await Promise.all(updates);
+  const failed = results.find(r => r.error);
+  if (failed) return res.status(500).json({ error: failed.error.message });
   res.json({ success: true });
 });
 

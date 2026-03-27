@@ -285,16 +285,24 @@
     }
 
     async function respondNotif(id, status, btn) {
+      btn.disabled = true;
       try {
-        await fetch(`${API}/api/notifications/${id}`, {
+        const res = await fetch(`${API}/api/notifications/${id}`, {
           method: 'PATCH',
           headers: authHeaders(),
           body: JSON.stringify({ status })
         });
-        loadNotifications();
-        if (status === 'accepted') loadConnections();
+        if (!res.ok) {
+          const err = await res.json();
+          console.error('PATCH failed:', err);
+          btn.disabled = false;
+          return;
+        }
+        await loadNotifications();
+        if (status === 'accepted') await loadConnections();
       } catch (err) {
         console.error('Failed to respond:', err);
+        btn.disabled = false;
       }
     }
 
