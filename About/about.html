@@ -143,8 +143,8 @@
 
   <!-- CTA -->
   <div class="cta">
-    <h2>Ready to find your <span>legend</span>?</h2>
-    <p>Join PingMe and connect with knowledge that can't be Googled.</p>
+    <h2>Ready for your next <span>unique adventure</span>?</h2>
+    <p>Meet someone who shares your wanderlust, get matched, and explore a destination you both dream of — together.</p>
     <a class="btn-primary" href="../Login/signup.html">Create a free account</a>
   </div>
 
@@ -184,7 +184,10 @@
   function showSidebar() { document.querySelector('.sidebar').style.display = 'flex'; }
   function hideSidebar() { document.querySelector('.sidebar').style.display = 'none'; }
   window.addEventListener('resize', () => { if (window.innerWidth > 800) hideSidebar(); });
-  if (localStorage.getItem('token')) document.querySelectorAll('.btn-signin1').forEach(b => b.closest('li').style.display = 'none');
+  if (localStorage.getItem('token')) {
+    document.querySelectorAll('.btn-signin1').forEach(b => b.closest('li').style.display = 'none');
+    document.querySelector('.cta').style.display = 'none';
+  }
   function goToAccount(e) {
     e.preventDefault();
     window.location.href = localStorage.getItem('token')
