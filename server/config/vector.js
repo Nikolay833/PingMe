@@ -11,16 +11,18 @@ async function generateGeminiEmbedding(text) {
     throw new Error('VECTOR_API_KEY is not defined in environment variables');
   }
 
+  // Use the standard initialization
   const ai = new GoogleGenAI({ apiKey });
 
-  const model = 'text-embedding-004';
+  // Reverting to the model that was confirmed reachable in your environment
+  const model = 'gemini-embedding-001'; 
 
-  console.log(`[VECTOR] Generating embedding for text length: ${text.length} using model: ${model}`);
+  console.log(`[VECTOR V5] Generating embedding for text length: ${text.length} using model: ${model}`);
 
   try {
     const response = await ai.models.embedContent({
       model,
-      contents: text, // Pass the text directly
+      contents: [{ parts: [{ text }] }],
       config: {
         taskType: 'RETRIEVAL_DOCUMENT',
         outputDimensionality: 128
@@ -28,15 +30,14 @@ async function generateGeminiEmbedding(text) {
     });
 
     if (!response || !response.embeddings || response.embeddings.length === 0) {
-      console.error('[VECTOR] No embeddings in response:', response);
-      throw new Error('Invalid response from Gemini Embedding API: No embeddings returned');
+      throw new Error('No embeddings returned from API');
     }
 
     const embedding = response.embeddings[0].values;
-    console.log(`[VECTOR] Successfully generated embedding. Dimensions: ${embedding.length}`);
+    console.log(`[VECTOR V5] Successfully generated embedding. Dimensions: ${embedding.length}`);
     return embedding;
   } catch (error) {
-    console.error('[VECTOR] Error details:', error);
+    console.error('[VECTOR V5] Error details:', error);
     throw new Error(`Gemini Embedding Failed: ${error.message}`);
   }
 }

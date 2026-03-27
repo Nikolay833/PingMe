@@ -2,43 +2,75 @@ const express = require('express');
 const router = express.Router();
 const supabase = require('../config/supabase');
 const { authMiddleware } = require('../middleware/auth');
+const { generateGeminiEmbedding } = require('../config/vector');
+const { summarizeDescription } = require('../config/summarizer');
 
 /**
  * GET /api/match
- * Finds similar users based on vector embeddings of their descriptions.
  */
 router.get('/', authMiddleware, async (req, res) => {
   const userId = req.user.id;
+  console.log('[MATCH V5] Match request for user:', userId);
 
   try {
-    // 1. Get current user's embedding
-    const { data: userData, error: userError } = await supabase
+    // 1. Get embedding
+    // NOTE: We use the exact case-sensitive name from your SQL: "AI_description"
+    // The supabase-js library handles quoting when you pass the string.
+    let { data: userData, error: userError } = await supabase
       .from('AI_description')
       .select('embedding')
       .eq('user_id', userId)
-      .single();
+      .maybeSingle();
 
-    if (userError || !userData?.embedding) {
-      console.error('[MATCH] Could not find embedding for user:', userId, userError);
-      return res.status(404).json({ error: 'Your profile description has not been processed yet. Please update your bio first.' });
+    let embedding = userData?.embedding;
+
+    // 2. Fallback to bio generation
+    if (!embedding) {
+      console.log('[MATCH V5] No embedding found. checking profiles bio...');
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('bio')
+        .eq('id', userId)
+        .single();
+
+      if (profile?.bio) {
+        console.log('[MATCH V5] Generating on-the-fly...');
+        const [summary, newEmbedding] = await Promise.all([
+          summarizeDescription(profile.bio, 10).catch(() => null),
+          generateGeminiEmbedding(profile.bio)
+        ]);
+
+        if (newEmbedding) {
+          embedding = newEmbedding;
+          await supabase.from('AI_description').upsert({
+            user_id: userId,
+            original_description: profile.bio,
+            summary: summary || profile.bio.substring(0, 100),
+            embedding: newEmbedding
+          });
+          console.log('[MATCH V5] Embedding generated and saved.');
+        }
+      }
     }
 
-    // 2. Call the RPC function in Supabase to find matches
+    if (!embedding) {
+      return res.status(404).json({ error: 'Please add a Bio to your profile first!' });
+    }
+
+    // 3. Search using RPC
     const { data: matches, error: matchError } = await supabase.rpc('match_users', {
-      query_embedding: userData.embedding,
-      match_threshold: 0.5, // 50% similarity threshold (can be adjusted)
-      match_count: 6,       // Return top 6 matches
+      query_embedding: embedding,
+      match_threshold: 0.1, // Very low threshold for testing
+      match_count: 6,
       exclude_user_id: userId
     });
 
-    if (matchError) {
-      console.error('[MATCH] RPC match_users failed:', matchError);
-      return res.status(500).json({ error: 'Failed to find matches.' });
-    }
+    if (matchError) return res.status(500).json({ error: matchError.message });
 
-    res.json({ success: true, matches });
+    res.json({ success: true, matches: matches || [] });
+
   } catch (error) {
-    console.error('[MATCH] Unexpected error:', error);
+    console.error('[MATCH V5] Crash:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
