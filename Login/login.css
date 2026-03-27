@@ -38,7 +38,7 @@ body::before {
 body::after {
   width: 400px;
   height: 400px;
-  background: #FDBA9A;
+  background: #A7F3D0;
   bottom: -80px;
   left: -80px;
 }
@@ -164,7 +164,7 @@ button[type="submit"] {
 }
 
 button[type="submit"]:hover {
-  background: #C8502B;
+  background: #047857;
   box-shadow: 0 6px 24px rgba(5, 150, 105, 0.45);
   transform: translateY(-1px);
 }

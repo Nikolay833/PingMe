@@ -27,7 +27,7 @@ body::before {
 body::after {
   width: 450px;
   height: 450px;
-  background: #FDBA9A;
+  background: #A7F3D0;
   bottom: -100px;
   left: -100px;
 }

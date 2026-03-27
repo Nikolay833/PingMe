@@ -24,14 +24,14 @@ body::after {
 body::before {
   width: 600px;
   height: 600px;
-  background: #C8502B;
+  background: #047857;
   top: -150px;
   right: -150px;
 }
 body::after {
   width: 450px;
   height: 450px;
-  background: #FDBA9A;
+  background: #A7F3D0;
   bottom: -100px;
   left: -100px;
 }
@@ -86,7 +86,7 @@ body::after {
 }
 
 .hero h2 span {
-  color: #C8502B;
+  color: #047857;
 }
 
 .hero p {
@@ -117,7 +117,7 @@ body::after {
 }
 
 .btn-primary:hover {
-  background: #C8502B;
+  background: #047857;
   box-shadow: 0 6px 24px rgba(5, 150, 105, 0.45);
   transform: translateY(-1px);
 }
@@ -228,7 +228,7 @@ body::after {
 .footer-brand h2 {
   font-size: 1.6rem;
   font-weight: 700;
-  color: #C8502B;
+  color: #047857;
   margin-bottom: 0.75rem;
   letter-spacing: -0.02em;
 }
@@ -257,7 +257,7 @@ body::after {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: #C8502B;
+  color: #047857;
   margin-bottom: 0.25rem;
 }
 
