@@ -4,8 +4,8 @@ const supabase = require('../config/supabase');
 const { authMiddleware } = require('../middleware/auth');
 const { randomUUID } = require('crypto');
 
-// GET /api/notifications — incoming pending requests
-router.get('/', authMiddleware, async (req, res) => {
+// GET /api/notifications/all — all notifications (sent + received) for the logged-in user
+router.get('/all', authMiddleware, async (req, res) => {
   const { data, error } = await supabase
     .from('profiles')
     .select('notifications')
@@ -13,21 +13,7 @@ router.get('/', authMiddleware, async (req, res) => {
     .single();
 
   if (error) return res.status(500).json({ error: error.message });
-  const incoming = (data.notifications || []).filter(n => n.type === 'received' && n.status === 'pending');
-  res.json(incoming);
-});
-
-// GET /api/notifications/sent — sent requests with their current status
-router.get('/sent', authMiddleware, async (req, res) => {
-  const { data, error } = await supabase
-    .from('profiles')
-    .select('notifications')
-    .eq('id', req.user.id)
-    .single();
-
-  if (error) return res.status(500).json({ error: error.message });
-  const sent = (data.notifications || []).filter(n => n.type === 'sent');
-  res.json(sent);
+  res.json(data.notifications || []);
 });
 
 // GET /api/notifications/connections — accepted connections

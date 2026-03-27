@@ -113,30 +113,6 @@
       : '../Login/signin.html';
   }
 
-  let sentRequests = {};
-
-  async function loadSentRequests() {
-    const token = localStorage.getItem('token');
-    if (!token) return;
-    try {
-      const res = await fetch('http://localhost:3000/api/notifications/sent', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      const data = await res.json();
-      sentRequests = {};
-      (data || []).forEach(n => { sentRequests[n.recipient_id] = n.status; });
-    } catch {}
-  }
-
-  function connectBtnState(userId) {
-    const status = sentRequests[userId];
-    if (!status) return { text: 'Connect', disabled: false, style: '' };
-    if (status === 'pending')  return { text: 'Pending…', disabled: true,  style: 'opacity:0.6;' };
-    if (status === 'accepted') return { text: '✓ Connected', disabled: true, style: 'background:#059669;opacity:0.8;' };
-    if (status === 'declined') return { text: 'Declined', disabled: true,  style: 'opacity:0.5;' };
-    return { text: 'Connect', disabled: false, style: '' };
-  }
-
   async function sendConnect(recipientId, btn) {
     const token = localStorage.getItem('token');
     btn.disabled = true;
@@ -148,10 +124,8 @@
         body: JSON.stringify({ recipient_id: recipientId })
       });
       const data = await res.json();
-      if (res.status === 409) { btn.textContent = 'Pending…'; return; }
       if (!res.ok) { alert(data.error); btn.disabled = false; btn.textContent = 'Connect'; return; }
-      btn.textContent = 'Pending…';
-      sentRequests[recipientId] = 'pending';
+      btn.textContent = 'Sent ✓';
     } catch (err) {
       btn.disabled = false;
       btn.textContent = 'Connect';
@@ -189,15 +163,12 @@
         emptyState.style.display = 'none';
         matchGrid.innerHTML = '';
 
-        await loadSentRequests();
-
         data.matches.forEach(m => {
           const card = document.createElement('div');
           card.className = 'match-card';
 
           const similarityPercent = Math.round(m.similarity * 100);
           const initials = m.name ? m.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() : '?';
-          const btn = connectBtnState(m.user_id);
 
           card.innerHTML = `
             <span class="match-badge new">${similarityPercent}% Match</span>
@@ -206,7 +177,7 @@
             ${m.location ? `<div class="match-meta">📍 ${m.location}</div>` : ''}
             <p style="font-size:0.85rem; color:#555; line-height:1.6; margin-top:0.25rem; text-align:center;">${(m.bio || m.summary || '').split(/[.!?]/)[0].trim() || 'No bio available.'}</p>
             <div style="display:flex; gap:0.6rem; margin-top:0.75rem; width:100%;">
-              <button class="btn-ping" style="flex:1;${btn.style}" ${btn.disabled ? 'disabled' : ''} onclick="sendConnect('${m.user_id}', this)">${btn.text}</button>
+              <button class="btn-ping" style="flex:1;" onclick="sendConnect('${m.user_id}', this)">Connect</button>
               <button class="btn-ping" style="flex:1; background: rgba(5,150,105,0.12); color:#059669; box-shadow:none;" onclick="location.href='../Profile/profile.html?user_id=${m.user_id}'">View Profile</button>
             </div>
           `;
