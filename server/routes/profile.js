@@ -54,22 +54,14 @@ router.patch('/', authMiddleware, async (req, res) => {
     console.log(`[PROFILE V5] Updating AI for user ${userId}...`);
     (async () => {
       try {
-        const [summaryResult, embeddingResult] = await Promise.allSettled([
-          summarizeDescription(bio, 10),
-          generateGeminiEmbedding(bio)
-        ]);
-
-        const summary = summaryResult.status === 'fulfilled' ? summaryResult.value : null;
-        const embedding = embeddingResult.status === 'fulfilled' ? embeddingResult.value : null;
+        const embedding = await generateGeminiEmbedding(bio);
 
         if (embedding) {
           await supabase.from('AI_description').upsert({
             user_id: userId,
-            original_description: bio,
-            summary: summary || bio.substring(0, 100),
             embedding: embedding
           }, { onConflict: 'user_id' });
-          console.log('[PROFILE V5] AI updated.');
+          console.log('[PROFILE V5] AI updated (embedding only).');
         }
       } catch (err) {
         console.error('[PROFILE V5] AI update failed:', err);

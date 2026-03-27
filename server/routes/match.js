@@ -3,7 +3,6 @@ const router = express.Router();
 const supabase = require('../config/supabase');
 const { authMiddleware } = require('../middleware/auth');
 const { generateGeminiEmbedding } = require('../config/vector');
-const { summarizeDescription } = require('../config/summarizer');
 
 /**
  * GET /api/match
@@ -13,9 +12,7 @@ router.get('/', authMiddleware, async (req, res) => {
   console.log('[MATCH V5] Match request for user:', userId);
 
   try {
-    // 1. Get embedding
-    // NOTE: We use the exact case-sensitive name from your SQL: "AI_description"
-    // The supabase-js library handles quoting when you pass the string.
+    // 1. Get embedding (Using simple table name, library handles quoting)
     let { data: userData, error: userError } = await supabase
       .from('AI_description')
       .select('embedding')
@@ -35,32 +32,27 @@ router.get('/', authMiddleware, async (req, res) => {
 
       if (profile?.bio) {
         console.log('[MATCH V5] Generating on-the-fly...');
-        const [summary, newEmbedding] = await Promise.all([
-          summarizeDescription(profile.bio, 10).catch(() => null),
-          generateGeminiEmbedding(profile.bio)
-        ]);
+        const newEmbedding = await generateGeminiEmbedding(profile.bio);
 
         if (newEmbedding) {
           embedding = newEmbedding;
           await supabase.from('AI_description').upsert({
             user_id: userId,
-            original_description: profile.bio,
-            summary: summary || profile.bio.substring(0, 100),
             embedding: newEmbedding
-          });
+          }, { onConflict: 'user_id' });
           console.log('[MATCH V5] Embedding generated and saved.');
         }
       }
     }
 
     if (!embedding) {
-      return res.status(404).json({ error: 'Please add a Bio to your profile first!' });
+      return res.status(404).json({ error: 'Please update your bio in "My Profile" first.' });
     }
 
-    // 3. Search using RPC
+    // 3. Search
     const { data: matches, error: matchError } = await supabase.rpc('match_users', {
       query_embedding: embedding,
-      match_threshold: 0.1, // Very low threshold for testing
+      match_threshold: 0.1,
       match_count: 6,
       exclude_user_id: userId
     });
