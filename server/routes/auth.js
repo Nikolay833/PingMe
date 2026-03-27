@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const supabase = require('../config/supabase');
+const { summarizeDescription } = require('../config/summarizer');
+const { generateGeminiEmbedding } = require('../config/vector');
 
 // POST /api/auth/signup — register form in login.html
 router.post('/signup', async (req, res) => {
@@ -37,11 +39,11 @@ router.post('/signup', async (req, res) => {
 
   if (profileError) {
     console.error('[SIGNUP] Profile creation failed:', profileError.message);
-    // Even if profile fails, we might want to return 400
     return res.status(400).json({ error: profileError.message });
   }
 
   // Handle AI description and embeddings
+  let aiWarning = null;
   if (description && description.trim().length > 0) {
     console.log(`[AI] Processing description for user ${userId}...`);
     try {
@@ -57,26 +59,27 @@ router.post('/signup', async (req, res) => {
 
       if (summaryResult.status === 'rejected') {
         console.error('[AI] Summarization failed:', summaryResult.reason);
+        aiWarning = `Summarization failed: ${summaryResult.reason.message || summaryResult.reason}`;
       }
       if (embeddingResult.status === 'rejected') {
         console.error('[AI] Embedding generation failed:', embeddingResult.reason);
+        aiWarning = (aiWarning ? aiWarning + '; ' : '') + `Embedding failed: ${embeddingResult.reason.message || embeddingResult.reason}`;
       }
 
       // We NEED the embedding for the AI_description table.
-      // If we have at least the embedding, we save it.
       if (embedding) {
-        console.log(`[AI] Writing to AI_description for user ${userId}...`);
+        console.log(`[AI] Writing to "AI_description" for user ${userId}...`);
         
-        const { data: aiData, error: aiInsertError } = await supabase.from('AI_description').insert({
+        const { error: aiInsertError } = await supabase.from('AI_description').insert({
           user_id: userId,
           original_description: description,
-          summary: summary || description.substring(0, 100), // Fallback to start of original description
+          summary: summary || description.substring(0, 100),
           embedding: embedding
         });
 
         if (aiInsertError) {
           console.error('[AI] Supabase AI_description insert error:', aiInsertError.message);
-          console.error('[AI] Error full details:', JSON.stringify(aiInsertError));
+          aiWarning = (aiWarning ? aiWarning + '; ' : '') + `DB Insert failed: ${aiInsertError.message}`;
         } else {
           console.log('[AI] Successfully saved to AI_description');
         }
@@ -85,6 +88,7 @@ router.post('/signup', async (req, res) => {
       }
     } catch (aiErr) {
       console.error('[AI] Unexpected overall AI Processing error:', aiErr);
+      aiWarning = (aiWarning ? aiWarning + '; ' : '') + `Unexpected AI error: ${aiErr.message}`;
     }
   } else {
     console.log('[AI] Skipping: No description provided by user.');
@@ -102,7 +106,8 @@ router.post('/signup', async (req, res) => {
   res.json({
     success: true,
     token: sessionData.session.access_token,
-    user: { id: userId, email, name }
+    user: { id: userId, email, name },
+    warning: aiWarning
   });
 });
 

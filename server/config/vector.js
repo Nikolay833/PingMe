@@ -13,7 +13,7 @@ async function generateGeminiEmbedding(text) {
 
   const ai = new GoogleGenAI({ apiKey });
 
-  const model = 'gemini-embedding-001';
+  const model = 'text-embedding-004';
 
   console.log(`[VECTOR] Generating embedding for text length: ${text.length} using model: ${model}`);
 
