@@ -1,34 +1,45 @@
+const { GoogleGenAI } = require('@google/genai');
+
+/**
+ * Generates vector embeddings for the given text using Google Gemini API.
+ * Uses the @google/genai library as requested.
+ * Matches the vector(3072) requirement of the database.
+ */
 async function generateGeminiEmbedding(text) {
   const apiKey = process.env.VECTOR_API_KEY;
-  const model = "gemini-embedding-001";
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:embedContent`;
-
-  const response = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-goog-api-key": apiKey
-    },
-    body: JSON.stringify({
-      model: `models/${model}`,
-      taskType: "RETRIEVAL_DOCUMENT", // Best for storing descriptions for future search
-      content: {
-        parts: [{ text: text }],
-      },
-    }),
-  });
-
-  const data = await response.json();
-
-  if (data.error) {
-    throw new Error(`Gemini Embedding Error (${data.error.status}): ${data.error.message}`);
+  if (!apiKey) {
+    throw new Error('VECTOR_API_KEY is not defined in environment variables');
   }
 
-  if (!data.embedding || !data.embedding.values) {
-    throw new Error("Invalid response from Gemini Embedding API");
-  }
+  const ai = new GoogleGenAI({ apiKey });
 
-  return data.embedding.values;
+  // text-embedding-004 is a stable and powerful model that supports 3072.
+  const model = 'text-embedding-004'; 
+
+  console.log(`[VECTOR] Generating embedding for text length: ${text.length} using model: ${model}`);
+
+  try {
+    const response = await ai.models.embedContent({
+      model,
+      contents: text, // Pass the text directly
+      config: {
+        taskType: 'RETRIEVAL_DOCUMENT',
+        outputDimensionality: 3072
+      }
+    });
+
+    if (!response || !response.embeddings || response.embeddings.length === 0) {
+      console.error('[VECTOR] No embeddings in response:', response);
+      throw new Error('Invalid response from Gemini Embedding API: No embeddings returned');
+    }
+
+    const embedding = response.embeddings[0].values;
+    console.log(`[VECTOR] Successfully generated embedding. Dimensions: ${embedding.length}`);
+    return embedding;
+  } catch (error) {
+    console.error('[VECTOR] Error details:', error);
+    throw new Error(`Gemini Embedding Failed: ${error.message}`);
+  }
 }
 
 module.exports = { generateGeminiEmbedding };

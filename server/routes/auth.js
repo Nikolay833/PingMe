@@ -9,60 +9,102 @@ router.post('/signup', async (req, res) => {
   const { firstName, surname, email, password, country, city, phone, description } = req.body;
   const name = `${firstName} ${surname}`.trim();
 
+  console.log('[SIGNUP] Starting registration for:', email);
+
+  // Create auth user
   const { data: authData, error: authError } = await supabase.auth.admin.createUser({
     email,
     password,
     email_confirm: true
   });
 
-  if (authError) return res.status(400).json({ error: authError.message });
+  if (authError) {
+    console.error('[SIGNUP] Registration failed at auth creation:', authError.message);
+    return res.status(400).json({ error: authError.message });
+  }
 
-  await supabase.from('profiles').insert({
-    id: authData.user.id,
+  const userId = authData.user.id;
+  console.log('[SIGNUP] Auth user created with ID:', userId);
+
+  // Insert profile
+  const { error: profileError } = await supabase.from('profiles').insert({
+    id: userId,
     role: 'traveler',
     name,
     country,
     city,
-    phone
+    phone,
+    bio: description // Map description to bio for the profile
   });
 
+  if (profileError) {
+    console.error('[SIGNUP] Profile creation failed:', profileError.message);
+    // Even if profile fails, we might want to return 400
+    return res.status(400).json({ error: profileError.message });
+  }
+
   // Handle AI description and embeddings
-  if (description) {
-    console.log('Starting AI processing for description...');
+  if (description && description.trim().length > 0) {
+    console.log(`[AI] Processing description for user ${userId}...`);
     try {
-      const [summary, embedding] = await Promise.all([
+      // 1. Summarize description (OpenRouter)
+      // 2. Generate embedding (@google/genai)
+      const [summaryResult, embeddingResult] = await Promise.allSettled([
         summarizeDescription(description, 10),
         generateGeminiEmbedding(description)
       ]);
 
-      console.log('AI processing complete. Summary:', summary, 'Embedding length:', embedding.length);
+      const summary = summaryResult.status === 'fulfilled' ? summaryResult.value : null;
+      const embedding = embeddingResult.status === 'fulfilled' ? embeddingResult.value : null;
 
-      const { data: aiData, error: aiInsertError } = await supabase.from('AI_description').insert({
-        user_id: authData.user.id,
-        original_description: description,
-        summary: summary,
-        embedding: embedding
-      });
+      if (summaryResult.status === 'rejected') {
+        console.error('[AI] Summarization failed:', summaryResult.reason);
+      }
+      if (embeddingResult.status === 'rejected') {
+        console.error('[AI] Embedding generation failed:', embeddingResult.reason);
+      }
 
-      if (aiInsertError) {
-        console.error('Supabase AI_description insert error:', aiInsertError.message);
+      // We NEED the embedding for the AI_description table.
+      // If we have at least the embedding, we save it.
+      if (embedding) {
+        console.log(`[AI] Writing to AI_description for user ${userId}...`);
+        
+        const { data: aiData, error: aiInsertError } = await supabase.from('AI_description').insert({
+          user_id: userId,
+          original_description: description,
+          summary: summary || description.substring(0, 100), // Fallback to start of original description
+          embedding: embedding
+        });
+
+        if (aiInsertError) {
+          console.error('[AI] Supabase AI_description insert error:', aiInsertError.message);
+          console.error('[AI] Error full details:', JSON.stringify(aiInsertError));
+        } else {
+          console.log('[AI] Successfully saved to AI_description');
+        }
       } else {
-        console.log('Successfully saved to AI_description');
+        console.warn('[AI] Skipping AI_description storage: No embedding generated.');
       }
     } catch (aiErr) {
-      console.error('AI Processing or DB Insert failed:', aiErr.message);
-      // We don't block registration if AI fails
+      console.error('[AI] Unexpected overall AI Processing error:', aiErr);
     }
+  } else {
+    console.log('[AI] Skipping: No description provided by user.');
   }
 
   // Auto-login so we get a token back
-  const { data: session, error: loginError } = await supabase.auth.signInWithPassword({ email, password });
-  if (loginError) return res.status(400).json({ error: loginError.message });
+  const { data: sessionData, error: loginError } = await supabase.auth.signInWithPassword({ email, password });
+  if (loginError) {
+    console.error('[SIGNUP] Login after signup failed:', loginError.message);
+    return res.status(400).json({ error: loginError.message });
+  }
+
+  console.log('[SIGNUP] Registration and processing complete for:', email);
 
   res.json({
     success: true,
-    token: session.session.access_token,
-    user: { id: authData.user.id, email, name }
+    token: sessionData.session.access_token,
+    user: { id: userId, email, name }
   });
 });
 
