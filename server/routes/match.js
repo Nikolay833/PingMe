@@ -64,7 +64,7 @@ router.get('/', authMiddleware, async (req, res) => {
       const userIds = matches.map(m => m.user_id);
       const { data: profiles } = await supabase
         .from('profiles')
-        .select('id, bio, location, points')
+        .select('id, bio, location, points, avatar_url')
         .in('id', userIds);
 
       const profileMap = {};
@@ -72,9 +72,10 @@ router.get('/', authMiddleware, async (req, res) => {
 
       matches.forEach(m => {
         const p = profileMap[m.user_id] || {};
-        m.bio      = p.bio      || '';
-        m.location = p.location || '';
-        m.points   = p.points   || 0;
+        m.bio        = p.bio        || '';
+        m.location   = p.location   || '';
+        m.points     = p.points     || 0;
+        m.avatar_url = p.avatar_url || '';
       });
     }
 
