@@ -95,6 +95,10 @@
       <button type="submit">Save changes</button>
     </form>
 
+    <div class="logout-section">
+      <button type="button" class="btn-logout" onclick="logout()">Log out</button>
+    </div>
+
   </div>
 
   <script>
@@ -197,6 +201,11 @@
     });
 
     loadProfile();
+
+    function logout() {
+      localStorage.removeItem('token');
+      window.location.href = '../Homepage/index.html';
+    }
   </script>
 
   <script>
