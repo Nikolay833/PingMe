@@ -110,10 +110,16 @@
 
   </div>
 
-  <!-- Notifications -->
+  <!-- Incoming connection requests -->
   <div class="notif-panel" id="notif-panel" style="display:none">
     <h3 class="notif-title">🔔 Connection Requests</h3>
     <div id="notif-list"></div>
+  </div>
+
+  <!-- Sent requests status -->
+  <div class="notif-panel" id="sent-panel" style="display:none">
+    <h3 class="notif-title">📤 Sent Requests</h3>
+    <div id="sent-list"></div>
   </div>
 
   <!-- Connections button (top-right) -->
@@ -256,16 +262,18 @@
         const data = await res.json();
         if (!Array.isArray(data) || data.length === 0) return;
 
-        const panel = document.getElementById('notif-panel');
-        const list  = document.getElementById('notif-list');
-        list.innerHTML = '';
+        const recvPanel = document.getElementById('notif-panel');
+        const recvList  = document.getElementById('notif-list');
+        const sentPanel = document.getElementById('sent-panel');
+        const sentList  = document.getElementById('sent-list');
+        recvList.innerHTML = '';
+        sentList.innerHTML = '';
 
         data.forEach(n => {
-          const item = document.createElement('div');
-          item.className = 'notif-item';
-          item.id = `notif-${n.id}`;
-
           if (n.type === 'received' && n.status === 'pending') {
+            const item = document.createElement('div');
+            item.className = 'notif-item';
+            item.id = `notif-${n.id}`;
             item.innerHTML = `
               <p class="notif-msg"><strong>${n.sender_name}</strong> wants to connect with you</p>
               <div class="notif-actions">
@@ -274,19 +282,22 @@
                 <button class="notif-btn notif-view" onclick="location.href='../Profile/profile.html?user_id=${n.sender_id}'">View Profile</button>
               </div>
             `;
-          } else if (n.type === 'sent') {
-            const statusLabel = n.status === 'pending' ? 'Pending' : (n.status === 'accepted' ? 'the request has been accepted' : 'the request has been declined');
-            const statusIcon = { pending: '⏳ ', accepted: '✓ ', declined: '✗ ' }[n.status] || '';
+            recvList.appendChild(item);
+          } else if (n.type === 'sent' && n.status === 'pending') {
+            const statusLabel = n.status === 'pending' ? 'Pending' : (n.status === 'accepted' ? 'Accepted' : 'Declined');
+            const statusIcon  = { pending: '⏳ ', accepted: '✓ ', declined: '✗ ' }[n.status] || '';
             const statusColor = { pending: '#888', accepted: '#059669', declined: '#e53e3e' }[n.status] || '#888';
+            const item = document.createElement('div');
+            item.className = 'notif-item';
             item.innerHTML = `
               <p class="notif-msg">You sent a request to <strong>${n.recipient_name}</strong> — <span style="color:${statusColor};font-weight:600;">${statusIcon}${statusLabel}</span></p>
             `;
+            sentList.appendChild(item);
           }
-
-          if (item.innerHTML) list.appendChild(item);
         });
 
-        panel.style.display = list.children.length > 0 ? 'block' : 'none';
+        recvPanel.style.display = recvList.children.length > 0 ? 'block' : 'none';
+        sentPanel.style.display = sentList.children.length > 0 ? 'block' : 'none';
       } catch (err) {
         console.error('Failed to load notifications:', err);
       }
