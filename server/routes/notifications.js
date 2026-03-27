@@ -4,7 +4,7 @@ const supabase = require('../config/supabase');
 const { authMiddleware } = require('../middleware/auth');
 const { randomUUID } = require('crypto');
 
-// GET /api/notifications — get pending notifications for logged-in user
+// GET /api/notifications — incoming pending requests
 router.get('/', authMiddleware, async (req, res) => {
   const { data, error } = await supabase
     .from('profiles')
@@ -13,12 +13,36 @@ router.get('/', authMiddleware, async (req, res) => {
     .single();
 
   if (error) return res.status(500).json({ error: error.message });
-
-  const pending = (data.notifications || []).filter(n => n.status === 'pending');
-  res.json(pending);
+  const incoming = (data.notifications || []).filter(n => n.type === 'received' && n.status === 'pending');
+  res.json(incoming);
 });
 
-// POST /api/notifications — send a connect request to recipient
+// GET /api/notifications/sent — sent requests with their current status
+router.get('/sent', authMiddleware, async (req, res) => {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('notifications')
+    .eq('id', req.user.id)
+    .single();
+
+  if (error) return res.status(500).json({ error: error.message });
+  const sent = (data.notifications || []).filter(n => n.type === 'sent');
+  res.json(sent);
+});
+
+// GET /api/notifications/connections — accepted connections
+router.get('/connections', authMiddleware, async (req, res) => {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('connections')
+    .eq('id', req.user.id)
+    .single();
+
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data.connections || []);
+});
+
+// POST /api/notifications — send a connect request
 router.post('/', authMiddleware, async (req, res) => {
   const { recipient_id } = req.body;
   const sender_id = req.user.id;
@@ -27,35 +51,35 @@ router.post('/', authMiddleware, async (req, res) => {
   if (!recipient_id) return res.status(400).json({ error: 'recipient_id required' });
   if (recipient_id === sender_id) return res.status(400).json({ error: 'Cannot connect with yourself' });
 
-  // Load recipient's current notifications
-  const { data, error } = await supabase
-    .from('profiles')
-    .select('notifications')
-    .eq('id', recipient_id)
-    .single();
+  // Load both profiles
+  const [{ data: recipientData, error: rErr }, { data: senderData, error: sErr }] = await Promise.all([
+    supabase.from('profiles').select('notifications, name').eq('id', recipient_id).single(),
+    supabase.from('profiles').select('notifications').eq('id', sender_id).single()
+  ]);
 
-  if (error) return res.status(404).json({ error: 'Recipient not found' });
+  if (rErr || sErr) return res.status(404).json({ error: 'User not found' });
 
-  const notifications = data.notifications || [];
+  const recipientNotifs = recipientData.notifications || [];
+  const senderNotifs    = senderData.notifications || [];
 
-  // Prevent duplicate pending requests
-  const duplicate = notifications.find(n => n.sender_id === sender_id && n.status === 'pending');
+  // Prevent duplicate pending
+  const duplicate = recipientNotifs.find(n => n.sender_id === sender_id && n.status === 'pending');
   if (duplicate) return res.status(409).json({ error: 'Request already sent' });
 
-  notifications.push({
-    id: randomUUID(),
-    sender_id,
-    sender_name,
-    status: 'pending',
-    created_at: new Date().toISOString()
-  });
+  const id = randomUUID();
+  const created_at = new Date().toISOString();
 
-  const { error: updateError } = await supabase
-    .from('profiles')
-    .update({ notifications })
-    .eq('id', recipient_id);
+  // Add incoming entry to recipient
+  recipientNotifs.push({ id, sender_id, sender_name, type: 'received', status: 'pending', created_at });
 
-  if (updateError) return res.status(500).json({ error: updateError.message });
+  // Add outgoing entry to sender
+  senderNotifs.push({ id, recipient_id, recipient_name: recipientData.name || 'Someone', type: 'sent', status: 'pending', created_at });
+
+  await Promise.all([
+    supabase.from('profiles').update({ notifications: recipientNotifs }).eq('id', recipient_id),
+    supabase.from('profiles').update({ notifications: senderNotifs }).eq('id', sender_id)
+  ]);
+
   res.json({ success: true });
 });
 
@@ -66,24 +90,62 @@ router.patch('/:id', authMiddleware, async (req, res) => {
     return res.status(400).json({ error: 'status must be accepted or declined' });
   }
 
-  const { data, error } = await supabase
+  const recipientId = req.user.id;
+  const notifId = req.params.id;
+
+  // Load recipient's profile
+  const { data: recipientData, error } = await supabase
     .from('profiles')
-    .select('notifications')
-    .eq('id', req.user.id)
+    .select('notifications, connections, name')
+    .eq('id', recipientId)
     .single();
 
   if (error) return res.status(500).json({ error: error.message });
 
-  const notifications = (data.notifications || []).map(n =>
-    n.id === req.params.id ? { ...n, status } : n
+  const recipientNotifs = recipientData.notifications || [];
+  const notif = recipientNotifs.find(n => n.id === notifId);
+  if (!notif) return res.status(404).json({ error: 'Notification not found' });
+
+  const senderId = notif.sender_id;
+
+  // Update status in recipient's notifications
+  const updatedRecipientNotifs = recipientNotifs.map(n =>
+    n.id === notifId ? { ...n, status } : n
   );
 
-  const { error: updateError } = await supabase
+  // Load sender's profile to update their sent request status
+  const { data: senderData } = await supabase
     .from('profiles')
-    .update({ notifications })
-    .eq('id', req.user.id);
+    .select('notifications, connections')
+    .eq('id', senderId)
+    .single();
 
-  if (updateError) return res.status(500).json({ error: updateError.message });
+  const updatedSenderNotifs = (senderData?.notifications || []).map(n =>
+    n.id === notifId ? { ...n, status } : n
+  );
+
+  const updates = [
+    supabase.from('profiles').update({ notifications: updatedRecipientNotifs }).eq('id', recipientId),
+    supabase.from('profiles').update({ notifications: updatedSenderNotifs }).eq('id', senderId)
+  ];
+
+  // If accepted — add each other to connections
+  if (status === 'accepted') {
+    const now = new Date().toISOString();
+
+    const recipientConnections = [...(recipientData.connections || []),
+      { user_id: senderId, name: notif.sender_name, connected_at: now }];
+
+    const senderConnections = [...(senderData?.connections || []),
+      { user_id: recipientId, name: recipientData.name || 'Someone', connected_at: now }];
+
+    updates.push(
+      supabase.from('profiles').update({ connections: recipientConnections }).eq('id', recipientId),
+      supabase.from('profiles').update({ connections: senderConnections }).eq('id', senderId)
+    );
+  }
+
+  await Promise.all(updates);
   res.json({ success: true });
 });
 

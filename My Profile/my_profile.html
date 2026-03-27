@@ -116,6 +116,12 @@
     <div id="notif-list"></div>
   </div>
 
+  <!-- Connections -->
+  <div class="notif-panel" id="conn-panel" style="display:none">
+    <h3 class="notif-title">🤝 Connections</h3>
+    <div id="conn-list"></div>
+  </div>
+
   <script>
     const API = 'http://localhost:3000';
     const token = localStorage.getItem('token');
@@ -243,8 +249,8 @@
           item.innerHTML = `
             <p class="notif-msg"><strong>${n.sender_name}</strong> wants to connect with you</p>
             <div class="notif-actions">
-              <button class="notif-btn notif-accept" onclick="respondNotif('${n.id}','accepted','${n.sender_id}',this)">Accept</button>
-              <button class="notif-btn notif-decline" onclick="respondNotif('${n.id}','declined','${n.sender_id}',this)">Decline</button>
+              <button class="notif-btn notif-accept" onclick="respondNotif('${n.id}','accepted',this)">Accept</button>
+              <button class="notif-btn notif-decline" onclick="respondNotif('${n.id}','declined',this)">Decline</button>
               <button class="notif-btn notif-view" onclick="location.href='../Profile/profile.html?user_id=${n.sender_id}'">View Profile</button>
             </div>
           `;
@@ -255,7 +261,7 @@
       }
     }
 
-    async function respondNotif(id, status, senderId, btn) {
+    async function respondNotif(id, status, btn) {
       try {
         await fetch(`${API}/api/notifications/${id}`, {
           method: 'PATCH',
@@ -264,13 +270,41 @@
         });
         const item = document.getElementById(`notif-${id}`);
         item.innerHTML = `<p class="notif-msg notif-done">${status === 'accepted' ? '✓ Accepted' : '✗ Declined'}</p>`;
-        setTimeout(() => item.remove(), 1500);
+        setTimeout(() => { item.remove(); if (status === 'accepted') loadConnections(); }, 1200);
       } catch (err) {
         console.error('Failed to respond:', err);
       }
     }
 
+    async function loadConnections() {
+      try {
+        const res = await fetch(`${API}/api/notifications/connections`, { headers: authHeaders() });
+        const data = await res.json();
+        if (!Array.isArray(data) || data.length === 0) return;
+
+        const panel = document.getElementById('conn-panel');
+        const list  = document.getElementById('conn-list');
+        panel.style.display = 'block';
+        list.innerHTML = '';
+
+        data.forEach(c => {
+          const item = document.createElement('div');
+          item.className = 'notif-item';
+          item.innerHTML = `
+            <p class="notif-msg"><strong>${c.name}</strong></p>
+            <div class="notif-actions">
+              <button class="notif-btn notif-view" onclick="location.href='../Profile/profile.html?user_id=${c.user_id}'">View Profile</button>
+            </div>
+          `;
+          list.appendChild(item);
+        });
+      } catch (err) {
+        console.error('Failed to load connections:', err);
+      }
+    }
+
     loadNotifications();
+    loadConnections();
 
     function logout() {
       localStorage.removeItem('token');
