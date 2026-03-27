@@ -37,19 +37,12 @@ router.post('/signup', async (req, res) => {
   if (description?.trim()) {
     console.log(`[AI V5] Processing user ${userId}...`);
     try {
-      const [summaryResult, embeddingResult] = await Promise.allSettled([
-        summarizeDescription(description, 10),
-        generateGeminiEmbedding(description)
-      ]);
-
-      const summary = summaryResult.status === 'fulfilled' ? summaryResult.value : null;
-      const embedding = embeddingResult.status === 'fulfilled' ? embeddingResult.value : null;
+      // Only generating the embedding now, summary is no longer stored here
+      const embedding = await generateGeminiEmbedding(description);
 
       if (embedding) {
         const { error: aiInsertError } = await supabase.from('AI_description').insert({
           user_id: userId,
-          original_description: description,
-          summary: summary || description.substring(0, 100),
           embedding: embedding
         });
         if (aiInsertError) aiWarning = aiInsertError.message;
