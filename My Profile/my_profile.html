@@ -75,6 +75,7 @@
 
     <p class="profile-name">Your Name</p>
     <p class="profile-handle">@yourhandle</p>
+    <div id="profile-tag" style="display:none; text-align:center; margin-bottom:0.5rem;"></div>
 
     <div class="profile-info-row" id="profile-email-row" style="display:none">
       <span class="profile-info-label">✉️ Email</span>
@@ -153,6 +154,16 @@
       return { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
     }
 
+    function getTag(points) {
+      if (points >= 400) return { label: 'Legend',     emoji: '👑', color: '#B45309' };
+      if (points >= 200) return { label: 'Ambassador', emoji: '🏆', color: '#7C3AED' };
+      if (points >= 100) return { label: 'Influencer', emoji: '🌟', color: '#D97706' };
+      if (points >= 60)  return { label: 'Networker',  emoji: '⚡', color: '#0284C7' };
+      if (points >= 30)  return { label: 'Connector',  emoji: '🔗', color: '#6366F1' };
+      if (points >= 10)  return { label: 'Explorer',   emoji: '🧭', color: '#0891B2' };
+      return               { label: 'Newcomer',   emoji: '🌱', color: '#65A30D' };
+    }
+
     // Load profile on page open
     async function loadProfile() {
       try {
@@ -161,6 +172,12 @@
 
         document.querySelector('.profile-name').textContent   = data.name || 'Your Name';
         document.querySelector('.profile-handle').textContent = '@' + (data.name || 'yourhandle').toLowerCase().replace(/\s+/g, '');
+
+        const pts = data.points || 0;
+        const tag = getTag(pts);
+        const tagEl = document.getElementById('profile-tag');
+        tagEl.innerHTML = `<span style="background:${tag.color}18; color:${tag.color}; border:1px solid ${tag.color}40; border-radius:50px; padding:0.2rem 0.9rem; font-size:0.78rem; font-weight:700;">${tag.emoji} ${tag.label} · ${pts} pts</span>`;
+        tagEl.style.display = 'block';
         document.getElementById('display-name').value = data.name     || '';
         document.getElementById('bio').value          = data.bio      || '';
         document.getElementById('location').value     = data.location || '';

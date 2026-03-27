@@ -113,6 +113,16 @@
       : '../Login/signin.html';
   }
 
+  function getTag(points) {
+    if (points >= 400) return { label: 'Legend',     emoji: '👑', color: '#B45309' };
+    if (points >= 200) return { label: 'Ambassador', emoji: '🏆', color: '#7C3AED' };
+    if (points >= 100) return { label: 'Influencer', emoji: '🌟', color: '#D97706' };
+    if (points >= 60)  return { label: 'Networker',  emoji: '⚡', color: '#0284C7' };
+    if (points >= 30)  return { label: 'Connector',  emoji: '🔗', color: '#6366F1' };
+    if (points >= 10)  return { label: 'Explorer',   emoji: '🧭', color: '#0891B2' };
+    return               { label: 'Newcomer',   emoji: '🌱', color: '#65A30D' };
+  }
+
   async function sendConnect(recipientId, btn) {
     const token = localStorage.getItem('token');
     btn.disabled = true;
@@ -169,11 +179,13 @@
 
           const similarityPercent = Math.round(m.similarity * 100);
           const initials = m.name ? m.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() : '?';
+          const tag = getTag(m.points || 0);
 
           card.innerHTML = `
             <span class="match-badge new">${similarityPercent}% Match</span>
             <div class="match-avatar" style="background: linear-gradient(135deg, #059669, #A7F3D0);">${initials}</div>
             <div class="match-name">${m.name || 'Unknown'}</div>
+            <span style="background:${tag.color}18; color:${tag.color}; border:1px solid ${tag.color}40; border-radius:50px; padding:0.18rem 0.8rem; font-size:0.72rem; font-weight:700; margin-bottom:0.3rem; display:inline-block;">${tag.emoji} ${tag.label} · ${m.points || 0} pts</span>
             ${m.location ? `<div class="match-meta">📍 ${m.location}</div>` : ''}
             <p style="font-size:0.85rem; color:#555; line-height:1.6; margin-top:0.25rem; text-align:center;">${(m.bio || m.summary || '').split(/[.!?]/)[0].trim() || 'No bio available.'}</p>
             <div style="display:flex; gap:0.6rem; margin-top:0.75rem; width:100%;">

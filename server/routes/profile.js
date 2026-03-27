@@ -20,7 +20,7 @@ router.get('/', authMiddleware, async (req, res) => {
 router.get('/:userId', async (req, res) => {
   console.log('[PROFILE] Public fetch for userId:', req.params.userId);
   const [{ data, error }, { data: authUser }] = await Promise.all([
-    supabase.from('profiles').select('name, bio, location, avatar_url, phone').eq('id', req.params.userId).maybeSingle(),
+    supabase.from('profiles').select('name, bio, location, avatar_url, phone, points').eq('id', req.params.userId).maybeSingle(),
     supabase.auth.admin.getUserById(req.params.userId)
   ]);
 
@@ -81,6 +81,44 @@ router.patch('/avatar', authMiddleware, async (req, res) => {
 
   if (error) return res.status(400).json({ error: error.message });
   res.json({ success: true });
+});
+
+// POST /api/profile/:userId/rate — rate a connected user (0-5 stars)
+router.post('/:userId/rate', authMiddleware, async (req, res) => {
+  const { stars } = req.body;
+  const raterId   = req.user.id;
+  const targetId  = req.params.userId;
+
+  if (raterId === targetId) return res.status(400).json({ error: 'Cannot rate yourself' });
+  if (!Number.isInteger(stars) || stars < 0 || stars > 5)
+    return res.status(400).json({ error: 'Stars must be an integer 0–5' });
+
+  // Must be connected
+  const { data: rater } = await supabase.from('profiles').select('connections').eq('id', raterId).single();
+  const connected = (rater?.connections || []).some(c => c.user_id === targetId);
+  if (!connected) return res.status(403).json({ error: 'Must be connected to rate' });
+
+  // Load target profile
+  const { data: target, error: tErr } = await supabase
+    .from('profiles').select('points, ratings').eq('id', targetId).single();
+  if (tErr) return res.status(500).json({ error: tErr.message });
+
+  const ratings      = target?.ratings || [];
+  const existing     = ratings.find(r => r.rater_id === raterId);
+  const pointDelta   = existing ? stars - existing.stars : stars;
+  const updatedRatings = existing
+    ? ratings.map(r => r.rater_id === raterId ? { ...r, stars, updated_at: new Date().toISOString() } : r)
+    : [...ratings, { rater_id: raterId, stars, created_at: new Date().toISOString() }];
+
+  const newPoints = Math.max(0, (target?.points || 0) + pointDelta);
+
+  const { error } = await supabase
+    .from('profiles')
+    .update({ points: newPoints, ratings: updatedRatings })
+    .eq('id', targetId);
+
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ success: true, points: newPoints });
 });
 
 module.exports = router;

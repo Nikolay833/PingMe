@@ -126,8 +126,8 @@ router.patch('/:id', authMiddleware, async (req, res) => {
       { user_id: recipientId, name: recipientData.name || 'Someone', connected_at: now }];
 
     updates.push(
-      supabase.from('profiles').update({ connections: recipientConnections }).eq('id', recipientId),
-      supabase.from('profiles').update({ connections: senderConnections }).eq('id', senderId)
+      supabase.from('profiles').update({ connections: recipientConnections, points: (recipientData.points || 0) + 5 }).eq('id', recipientId),
+      supabase.from('profiles').update({ connections: senderConnections, points: (senderData?.points || 0) + 5 }).eq('id', senderId)
     );
   }
 

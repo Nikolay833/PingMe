@@ -120,6 +120,7 @@
 
   <p class="profile-name" id="profile-name">Loading...</p>
   <p class="profile-handle" id="profile-handle">@...</p>
+  <div id="profile-tag" style="display:none; text-align:center; margin-bottom:0.5rem;"></div>
 
   <div class="profile-info-row" id="profile-email-row" style="display:none">
     <span class="profile-info-label">✉️ Email</span>
@@ -133,94 +134,135 @@
   <p class="profile-location" id="profile-location" style="display:none"></p>
   <p class="profile-bio" id="profile-bio" style="display:none"></p>
 
-  <button class="btn-connect" id="connect-btn" onclick="sendConnect()">Connect</button>
-  <button class="btn-back" onclick="history.back()">← Back to matches</button>
+  <button class="btn-connect" id="connect-btn" onclick="sendConnect()" style="display:none">Connect</button>
+
+  <!-- Rating UI (only shown when connected) -->
+  <div id="rating-section" style="display:none; margin-bottom:0.6rem;">
+    <p style="font-size:0.8rem; color:#888; text-align:center; margin-bottom:0.4rem;">Rate this person</p>
+    <div id="stars" style="display:flex; justify-content:center; gap:0.4rem; font-size:1.6rem; cursor:pointer;">
+      <span data-v="1">☆</span><span data-v="2">☆</span><span data-v="3">☆</span><span data-v="4">☆</span><span data-v="5">☆</span>
+    </div>
+    <p id="rating-msg" style="font-size:0.78rem; color:#059669; text-align:center; margin-top:0.3rem; min-height:1rem;"></p>
+  </div>
+
+  <button class="btn-back" onclick="history.back()">← Back</button>
 
 </div>
 
 <script>
-  const API = 'http://localhost:3000';
+  const API    = 'http://localhost:3000';
   const params = new URLSearchParams(window.location.search);
   const userId = params.get('user_id');
-  const token = localStorage.getItem('token');
+  const token  = localStorage.getItem('token');
 
-  if (!userId) {
-    window.location.href = '../Match/match.html';
-  }
+  if (!userId) window.location.href = '../Match/match.html';
 
   function authHeaders() {
     return { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
   }
 
+  function getTag(points) {
+    if (points >= 400) return { label: 'Legend',      emoji: '👑', color: '#B45309' };
+    if (points >= 200) return { label: 'Ambassador',  emoji: '🏆', color: '#7C3AED' };
+    if (points >= 100) return { label: 'Influencer',  emoji: '🌟', color: '#D97706' };
+    if (points >= 60)  return { label: 'Networker',   emoji: '⚡', color: '#0284C7' };
+    if (points >= 30)  return { label: 'Connector',   emoji: '🔗', color: '#6366F1' };
+    if (points >= 10)  return { label: 'Explorer',    emoji: '🧭', color: '#0891B2' };
+    return               { label: 'Newcomer',    emoji: '🌱', color: '#65A30D' };
+  }
+
   async function sendConnect() {
-    if (!token) {
-      alert('Please sign in to connect.');
-      window.location.href = '../Login/signin.html';
-      return;
-    }
-
+    if (!token) { window.location.href = '../Login/signin.html'; return; }
     const btn = document.getElementById('connect-btn');
-    btn.disabled = true;
-    btn.textContent = 'Sending...';
-
+    btn.disabled = true; btn.textContent = 'Sending...';
     try {
       const res = await fetch(`${API}/api/notifications`, {
-        method: 'POST',
-        headers: authHeaders(),
+        method: 'POST', headers: authHeaders(),
         body: JSON.stringify({ recipient_id: userId })
       });
       const data = await res.json();
-      if (!res.ok) {
-        alert(data.error || 'Failed to send request');
-        btn.disabled = false;
-        btn.textContent = 'Connect';
-        return;
-      }
+      if (!res.ok) { alert(data.error || 'Failed'); btn.disabled = false; btn.textContent = 'Connect'; return; }
       btn.textContent = 'Sent ✓';
-    } catch (err) {
-      console.error('Connect failed:', err);
-      btn.disabled = false;
-      btn.textContent = 'Connect';
-    }
+    } catch (err) { btn.disabled = false; btn.textContent = 'Connect'; }
+  }
+
+  let selectedStars = 0;
+
+  function initStars(existingRating) {
+    const starEls = document.querySelectorAll('#stars span');
+    selectedStars = existingRating || 0;
+    renderStars(selectedStars);
+
+    starEls.forEach(s => {
+      s.addEventListener('mouseover', () => renderStars(+s.dataset.v));
+      s.addEventListener('mouseout',  () => renderStars(selectedStars));
+      s.addEventListener('click', async () => {
+        selectedStars = +s.dataset.v;
+        renderStars(selectedStars);
+        try {
+          const res = await fetch(`${API}/api/profile/${userId}/rate`, {
+            method: 'POST', headers: authHeaders(),
+            body: JSON.stringify({ stars: selectedStars })
+          });
+          const data = await res.json();
+          document.getElementById('rating-msg').textContent = res.ok
+            ? `You rated ${selectedStars} ★  (total: ${data.points} pts)`
+            : data.error;
+        } catch { document.getElementById('rating-msg').textContent = 'Rating failed'; }
+      });
+    });
+  }
+
+  function renderStars(count) {
+    document.querySelectorAll('#stars span').forEach((s, i) => {
+      s.textContent = i < count ? '★' : '☆';
+      s.style.color  = i < count ? '#D97706' : '#ccc';
+    });
   }
 
   async function loadProfile() {
     try {
-      const res = await fetch(`${API}/api/profile/${userId}`);
-      if (!res.ok) throw new Error('Not found');
+      const res  = await fetch(`${API}/api/profile/${userId}`);
+      if (!res.ok) throw new Error();
       const data = await res.json();
 
-      document.getElementById('profile-name').textContent = data.name || 'Unknown';
+      document.getElementById('profile-name').textContent   = data.name || 'Unknown';
       document.getElementById('profile-handle').textContent = '@' + (data.name || 'unknown').toLowerCase().replace(/\s+/g, '');
       document.title = `PingMe — ${data.name || 'Profile'}`;
 
-      if (data.email) {
-        document.getElementById('profile-email').textContent = data.email;
-        document.getElementById('profile-email-row').style.display = 'flex';
-      }
-      if (data.phone) {
-        document.getElementById('profile-phone').textContent = data.phone;
-        document.getElementById('profile-phone-row').style.display = 'flex';
-      }
-      if (data.location) {
-        const loc = document.getElementById('profile-location');
-        loc.textContent = '📍 ' + data.location;
-        loc.style.display = 'block';
-      }
+      // Tag
+      const pts = data.points || 0;
+      const tag = getTag(pts);
+      const tagEl = document.getElementById('profile-tag');
+      tagEl.innerHTML = `<span style="background:${tag.color}18; color:${tag.color}; border:1px solid ${tag.color}40; border-radius:50px; padding:0.2rem 0.9rem; font-size:0.78rem; font-weight:700;">${tag.emoji} ${tag.label} · ${pts} pts</span>`;
+      tagEl.style.display = 'block';
 
-      if (data.bio) {
-        const bio = document.getElementById('profile-bio');
-        bio.textContent = data.bio;
-        bio.style.display = 'block';
-      }
-
+      if (data.email)    { document.getElementById('profile-email').textContent = data.email; document.getElementById('profile-email-row').style.display = 'flex'; }
+      if (data.phone)    { document.getElementById('profile-phone').textContent = data.phone; document.getElementById('profile-phone-row').style.display = 'flex'; }
+      if (data.location) { const l = document.getElementById('profile-location'); l.textContent = '📍 ' + data.location; l.style.display = 'block'; }
+      if (data.bio)      { const b = document.getElementById('profile-bio');      b.textContent = data.bio;               b.style.display = 'block'; }
       if (data.avatar_url) {
         const img = document.getElementById('avatar-img');
-        img.src = data.avatar_url;
-        img.style.display = 'block';
+        img.src = data.avatar_url; img.style.display = 'block';
         document.getElementById('avatar-circle').querySelector('svg').style.display = 'none';
       }
-    } catch (err) {
+
+      // Check connection status
+      if (token) {
+        const connRes  = await fetch(`${API}/api/notifications/connections`, { headers: authHeaders() });
+        const connData = await connRes.json();
+        const isConnected = Array.isArray(connData) && connData.some(c => c.user_id === userId);
+
+        if (isConnected) {
+          document.getElementById('rating-section').style.display = 'block';
+          initStars(0);
+        } else {
+          document.getElementById('connect-btn').style.display = 'block';
+        }
+      } else {
+        document.getElementById('connect-btn').style.display = 'block';
+      }
+    } catch {
       document.getElementById('profile-name').textContent = 'Profile not found';
     }
   }
