@@ -248,20 +248,32 @@
           item.className = 'notif-item';
           item.id = `notif-${n.id}`;
 
-          if (n.type === 'received' && n.status === 'pending') {
-            item.innerHTML = `
-              <p class="notif-msg"><strong>${n.sender_name}</strong> wants to connect with you</p>
-              <div class="notif-actions">
-                <button class="notif-btn notif-accept" onclick="respondNotif('${n.id}','accepted',this)">Accept</button>
-                <button class="notif-btn notif-decline" onclick="respondNotif('${n.id}','declined',this)">Decline</button>
-                <button class="notif-btn notif-view" onclick="location.href='../Profile/profile.html?user_id=${n.sender_id}'">View Profile</button>
-              </div>
-            `;
+          if (n.type === 'received') {
+            if (n.status === 'pending') {
+              item.innerHTML = `
+                <p class="notif-msg"><strong>${n.sender_name}</strong> wants to connect with you</p>
+                <div class="notif-actions">
+                  <button class="notif-btn notif-accept" onclick="respondNotif('${n.id}','accepted',this)">Accept</button>
+                  <button class="notif-btn notif-decline" onclick="respondNotif('${n.id}','declined',this)">Decline</button>
+                  <button class="notif-btn notif-view" onclick="location.href='../Profile/profile.html?user_id=${n.sender_id}'">View Profile</button>
+                </div>
+              `;
+            } else {
+              const statusLabel = n.status === 'accepted' ? 'accepted' : 'declined';
+              const statusColor = n.status === 'accepted' ? '#059669' : '#e53e3e';
+              item.innerHTML = `
+                <p class="notif-msg">You have <span style="color:${statusColor};font-weight:600;">${statusLabel}</span> the request from <strong>${n.sender_name}</strong></p>
+                <div class="notif-actions">
+                  <button class="notif-btn notif-view" onclick="location.href='../Profile/profile.html?user_id=${n.sender_id}'">View Profile</button>
+                </div>
+              `;
+            }
           } else if (n.type === 'sent') {
-            const statusLabel = { pending: '⏳ Pending', accepted: '✓ Accepted', declined: '✗ Declined' }[n.status] || n.status;
+            const statusLabel = n.status === 'pending' ? 'Pending' : (n.status === 'accepted' ? 'the request has been accepted' : 'the request has been declined');
+            const statusIcon = { pending: '⏳ ', accepted: '✓ ', declined: '✗ ' }[n.status] || '';
             const statusColor = { pending: '#888', accepted: '#059669', declined: '#e53e3e' }[n.status] || '#888';
             item.innerHTML = `
-              <p class="notif-msg">You sent a request to <strong>${n.recipient_name}</strong> — <span style="color:${statusColor};font-weight:600;">${statusLabel}</span></p>
+              <p class="notif-msg">You sent a request to <strong>${n.recipient_name}</strong> — <span style="color:${statusColor};font-weight:600;">${statusIcon}${statusLabel}</span></p>
             `;
           }
 

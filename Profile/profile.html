@@ -133,7 +133,7 @@
   <p class="profile-location" id="profile-location" style="display:none"></p>
   <p class="profile-bio" id="profile-bio" style="display:none"></p>
 
-  <button class="btn-connect" onclick="alert('Connect feature coming soon!')">Connect</button>
+  <button class="btn-connect" id="connect-btn" onclick="sendConnect()">Connect</button>
   <button class="btn-back" onclick="history.back()">← Back to matches</button>
 
 </div>
@@ -142,9 +142,46 @@
   const API = 'http://localhost:3000';
   const params = new URLSearchParams(window.location.search);
   const userId = params.get('user_id');
+  const token = localStorage.getItem('token');
 
   if (!userId) {
     window.location.href = '../Match/match.html';
+  }
+
+  function authHeaders() {
+    return { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
+  }
+
+  async function sendConnect() {
+    if (!token) {
+      alert('Please sign in to connect.');
+      window.location.href = '../Login/signin.html';
+      return;
+    }
+
+    const btn = document.getElementById('connect-btn');
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+
+    try {
+      const res = await fetch(`${API}/api/notifications`, {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({ recipient_id: userId })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.error || 'Failed to send request');
+        btn.disabled = false;
+        btn.textContent = 'Connect';
+        return;
+      }
+      btn.textContent = 'Sent ✓';
+    } catch (err) {
+      console.error('Connect failed:', err);
+      btn.disabled = false;
+      btn.textContent = 'Connect';
+    }
   }
 
   async function loadProfile() {
