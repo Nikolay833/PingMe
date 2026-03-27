@@ -256,3 +256,69 @@ button[type="submit"]:active {
   background: rgba(229, 62, 62, 0.08);
   border-color: #e53e3e;
 }
+
+/* ── Notifications ── */
+.notif-panel {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 420px;
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(5, 150, 105, 0.2);
+  border-radius: 24px;
+  padding: 1.5rem 2rem;
+  box-shadow: 0 8px 32px rgba(5, 150, 105, 0.1);
+  margin-top: 1.25rem;
+}
+
+.notif-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 1rem;
+}
+
+.notif-item {
+  padding: 0.9rem 0;
+  border-bottom: 1px solid rgba(5, 150, 105, 0.1);
+}
+
+.notif-item:last-child { border-bottom: none; }
+
+.notif-msg {
+  font-size: 0.88rem;
+  color: #444;
+  margin-bottom: 0.65rem;
+}
+
+.notif-msg strong { color: #1a1a1a; }
+
+.notif-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.notif-btn {
+  padding: 0.4rem 1rem;
+  border-radius: 50px;
+  border: none;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.notif-btn:hover { opacity: 0.85; }
+
+.notif-accept  { background: #059669; color: #fff; }
+.notif-decline { background: rgba(229,62,62,0.12); color: #e53e3e; }
+.notif-view    { background: rgba(5,150,105,0.1); color: #059669; }
+
+.notif-done {
+  font-size: 0.85rem;
+  color: #888;
+  font-style: italic;
+}

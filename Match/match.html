@@ -113,6 +113,26 @@
       : '../Login/signin.html';
   }
 
+  async function sendConnect(recipientId, btn) {
+    const token = localStorage.getItem('token');
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+    try {
+      const res = await fetch('http://localhost:3000/api/notifications', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ recipient_id: recipientId })
+      });
+      const data = await res.json();
+      if (res.status === 409) { btn.textContent = 'Requested'; return; }
+      if (!res.ok) { alert(data.error); btn.disabled = false; btn.textContent = 'Connect'; return; }
+      btn.textContent = 'Sent ✓';
+    } catch (err) {
+      btn.disabled = false;
+      btn.textContent = 'Connect';
+    }
+  }
+
   // Matching Logic
   const matchBtn = document.getElementById('find-matches-btn');
   const matchGrid = document.getElementById('matches-grid');
@@ -158,7 +178,7 @@
             ${m.location ? `<div class="match-meta">📍 ${m.location}</div>` : ''}
             <p style="font-size:0.85rem; color:#555; line-height:1.6; margin-top:0.25rem; text-align:center;">${(m.bio || m.summary || '').split(/[.!?]/)[0].trim() || 'No bio available.'}</p>
             <div style="display:flex; gap:0.6rem; margin-top:0.75rem; width:100%;">
-              <button class="btn-ping" style="flex:1;" onclick="alert('Connect feature coming soon!')">Connect</button>
+              <button class="btn-ping" style="flex:1;" onclick="sendConnect('${m.user_id}', this)">Connect</button>
               <button class="btn-ping" style="flex:1; background: rgba(5,150,105,0.12); color:#059669; box-shadow:none;" onclick="location.href='../Profile/profile.html?user_id=${m.user_id}'">View Profile</button>
             </div>
           `;

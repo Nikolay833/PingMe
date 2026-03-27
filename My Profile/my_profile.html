@@ -110,6 +110,12 @@
 
   </div>
 
+  <!-- Notifications -->
+  <div class="notif-panel" id="notif-panel" style="display:none">
+    <h3 class="notif-title">🔔 Connection Requests</h3>
+    <div id="notif-list"></div>
+  </div>
+
   <script>
     const API = 'http://localhost:3000';
     const token = localStorage.getItem('token');
@@ -219,6 +225,52 @@
     });
 
     loadProfile();
+
+    async function loadNotifications() {
+      try {
+        const res = await fetch(`${API}/api/notifications`, { headers: authHeaders() });
+        const data = await res.json();
+        if (!Array.isArray(data) || data.length === 0) return;
+
+        const panel = document.getElementById('notif-panel');
+        const list  = document.getElementById('notif-list');
+        panel.style.display = 'block';
+
+        data.forEach(n => {
+          const item = document.createElement('div');
+          item.className = 'notif-item';
+          item.id = `notif-${n.id}`;
+          item.innerHTML = `
+            <p class="notif-msg"><strong>${n.sender_name}</strong> wants to connect with you</p>
+            <div class="notif-actions">
+              <button class="notif-btn notif-accept" onclick="respondNotif('${n.id}','accepted','${n.sender_id}',this)">Accept</button>
+              <button class="notif-btn notif-decline" onclick="respondNotif('${n.id}','declined','${n.sender_id}',this)">Decline</button>
+              <button class="notif-btn notif-view" onclick="location.href='../Profile/profile.html?user_id=${n.sender_id}'">View Profile</button>
+            </div>
+          `;
+          list.appendChild(item);
+        });
+      } catch (err) {
+        console.error('Failed to load notifications:', err);
+      }
+    }
+
+    async function respondNotif(id, status, senderId, btn) {
+      try {
+        await fetch(`${API}/api/notifications/${id}`, {
+          method: 'PATCH',
+          headers: authHeaders(),
+          body: JSON.stringify({ status })
+        });
+        const item = document.getElementById(`notif-${id}`);
+        item.innerHTML = `<p class="notif-msg notif-done">${status === 'accepted' ? '✓ Accepted' : '✗ Declined'}</p>`;
+        setTimeout(() => item.remove(), 1500);
+      } catch (err) {
+        console.error('Failed to respond:', err);
+      }
+    }
+
+    loadNotifications();
 
     function logout() {
       localStorage.removeItem('token');
