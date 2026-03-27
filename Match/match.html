@@ -156,7 +156,7 @@
             <div class="match-avatar" style="background: linear-gradient(135deg, #059669, #A7F3D0);">${initials}</div>
             <div class="match-name">${m.name || 'Unknown'}</div>
             ${m.location ? `<div class="match-meta">📍 ${m.location}</div>` : ''}
-            <p style="font-size:0.85rem; color:#555; line-height:1.6; margin-top:0.25rem; text-align:center;">${m.bio || m.summary || 'No bio available.'}</p>
+            <p style="font-size:0.85rem; color:#555; line-height:1.6; margin-top:0.25rem; text-align:center;">${(m.bio || m.summary || '').split(/[.!?]/)[0].trim() || 'No bio available.'}</p>
             <div style="display:flex; gap:0.6rem; margin-top:0.75rem; width:100%;">
               <button class="btn-ping" style="flex:1;" onclick="alert('Connect feature coming soon!')">Connect</button>
               <button class="btn-ping" style="flex:1; background: rgba(5,150,105,0.12); color:#059669; box-shadow:none;" onclick="location.href='../Profile/profile.html?user_id=${m.user_id}'">View Profile</button>
