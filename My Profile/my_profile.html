@@ -231,13 +231,18 @@
           body: formData
         });
         const data = await res.json();
+        if (!res.ok) { console.error('Upload failed:', data.error); return; }
+        console.log('Uploaded, URL:', data.url);
 
         // Save URL to profile
-        await fetch(`${API}/api/profile/avatar`, {
+        const saveRes = await fetch(`${API}/api/profile/avatar`, {
           method: 'PATCH',
           headers: authHeaders(),
           body: JSON.stringify({ avatar_url: data.url })
         });
+        const saveData = await saveRes.json();
+        if (!saveRes.ok) console.error('Avatar save failed:', saveData.error);
+        else console.log('Avatar saved successfully');
       } catch (err) {
         console.error('Avatar upload failed:', err);
       }
@@ -253,7 +258,6 @@
 
         const panel = document.getElementById('notif-panel');
         const list  = document.getElementById('notif-list');
-        panel.style.display = 'block';
         list.innerHTML = '';
 
         data.forEach(n => {
@@ -261,26 +265,15 @@
           item.className = 'notif-item';
           item.id = `notif-${n.id}`;
 
-          if (n.type === 'received') {
-            if (n.status === 'pending') {
-              item.innerHTML = `
-                <p class="notif-msg"><strong>${n.sender_name}</strong> wants to connect with you</p>
-                <div class="notif-actions">
-                  <button class="notif-btn notif-accept" onclick="respondNotif('${n.id}','accepted',this,'${n.sender_name}')">Accept</button>
-                  <button class="notif-btn notif-decline" onclick="respondNotif('${n.id}','declined',this,'${n.sender_name}')">Decline</button>
-                  <button class="notif-btn notif-view" onclick="location.href='../Profile/profile.html?user_id=${n.sender_id}'">View Profile</button>
-                </div>
-              `;
-            } else {
-              const statusLabel = n.status === 'accepted' ? 'accepted' : 'declined';
-              const statusColor = n.status === 'accepted' ? '#059669' : '#e53e3e';
-              item.innerHTML = `
-                <p class="notif-msg">You have <span style="color:${statusColor};font-weight:600;">${statusLabel}</span> the request from <strong>${n.sender_name}</strong></p>
-                <div class="notif-actions">
-                  <button class="notif-btn notif-view" onclick="location.href='../Profile/profile.html?user_id=${n.sender_id}'">View Profile</button>
-                </div>
-              `;
-            }
+          if (n.type === 'received' && n.status === 'pending') {
+            item.innerHTML = `
+              <p class="notif-msg"><strong>${n.sender_name}</strong> wants to connect with you</p>
+              <div class="notif-actions">
+                <button class="notif-btn notif-accept" onclick="respondNotif('${n.id}','accepted',this,'${n.sender_name}')">Accept</button>
+                <button class="notif-btn notif-decline" onclick="respondNotif('${n.id}','declined',this,'${n.sender_name}')">Decline</button>
+                <button class="notif-btn notif-view" onclick="location.href='../Profile/profile.html?user_id=${n.sender_id}'">View Profile</button>
+              </div>
+            `;
           } else if (n.type === 'sent') {
             const statusLabel = n.status === 'pending' ? 'Pending' : (n.status === 'accepted' ? 'the request has been accepted' : 'the request has been declined');
             const statusIcon = { pending: '⏳ ', accepted: '✓ ', declined: '✗ ' }[n.status] || '';
@@ -292,6 +285,8 @@
 
           if (item.innerHTML) list.appendChild(item);
         });
+
+        panel.style.display = list.children.length > 0 ? 'block' : 'none';
       } catch (err) {
         console.error('Failed to load notifications:', err);
       }
