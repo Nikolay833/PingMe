@@ -23,7 +23,7 @@ async function generateGeminiEmbedding(text) {
       contents: text, // Pass the text directly
       config: {
         taskType: 'RETRIEVAL_DOCUMENT',
-        outputDimensionality: 3072
+        outputDimensionality: 128
       }
     });
 
