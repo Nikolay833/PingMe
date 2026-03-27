@@ -13,8 +13,7 @@ async function generateGeminiEmbedding(text) {
 
   const ai = new GoogleGenAI({ apiKey });
 
-  // text-embedding-004 is a stable and powerful model that supports 3072.
-  const model = 'text-embedding-004'; 
+  const model = 'gemini-embedding-001';
 
   console.log(`[VECTOR] Generating embedding for text length: ${text.length} using model: ${model}`);
 
