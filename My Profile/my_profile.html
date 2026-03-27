@@ -294,7 +294,7 @@
         });
         if (!res.ok) {
           const err = await res.json();
-          console.error('PATCH failed:', err);
+          console.error('PATCH failed:', err.error || JSON.stringify(err));
           btn.disabled = false;
           return;
         }

@@ -133,7 +133,10 @@ router.patch('/:id', authMiddleware, async (req, res) => {
 
   const results = await Promise.all(updates);
   const failed = results.find(r => r.error);
-  if (failed) return res.status(500).json({ error: failed.error.message });
+  if (failed) {
+    console.error('Supabase update error:', failed.error);
+    return res.status(500).json({ error: failed.error.message });
+  }
   res.json({ success: true });
 });
 
