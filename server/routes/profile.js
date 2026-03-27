@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const supabase = require('../config/supabase');
 const { authMiddleware } = require('../middleware/auth');
-const { summarizeDescription } = require('../config/summarizer');
 const { generateGeminiEmbedding } = require('../config/vector');
 
 // GET /api/profile
