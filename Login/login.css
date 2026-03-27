@@ -31,14 +31,14 @@ body::after {
 body::before {
   width: 520px;
   height: 520px;
-  background: #B778E8;
+  background: #059669;
   top: -120px;
   right: -100px;
 }
 body::after {
   width: 400px;
   height: 400px;
-  background: #d4a9f5;
+  background: #FDBA9A;
   bottom: -80px;
   left: -80px;
 }
@@ -51,11 +51,11 @@ body::after {
   background: rgba(255, 255, 255, 0.65);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(183, 120, 232, 0.2);
+  border: 1px solid rgba(5, 150, 105, 0.2);
   border-radius: 24px;
   padding: 2rem 2.25rem 1.75rem;
   box-shadow:
-    0 8px 32px rgba(183, 120, 232, 0.1),
+    0 8px 32px rgba(5, 150, 105, 0.1),
     0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
@@ -108,7 +108,7 @@ label {
 input, select {
   width: 100%;
   padding: 0.52rem 0.85rem;
-  border: 1.5px solid rgba(183, 120, 232, 0.2);
+  border: 1.5px solid rgba(5, 150, 105, 0.2);
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.8);
   font-size: 0.86rem;
@@ -124,8 +124,8 @@ input::placeholder {
 }
 
 input:focus, select:focus {
-  border-color: #B778E8;
-  box-shadow: 0 0 0 3px rgba(183, 120, 232, 0.12);
+  border-color: #059669;
+  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.12);
 }
 
 select {
@@ -151,7 +151,7 @@ button[type="submit"] {
   width: 100%;
   padding: 0.72rem;
   margin-top: 0.3rem;
-  background: #B778E8;
+  background: #059669;
   color: #fff;
   border: none;
   border-radius: 12px;
@@ -160,12 +160,12 @@ button[type="submit"] {
   cursor: pointer;
   letter-spacing: 0.01em;
   transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
-  box-shadow: 0 4px 18px rgba(183, 120, 232, 0.35);
+  box-shadow: 0 4px 18px rgba(5, 150, 105, 0.35);
 }
 
 button[type="submit"]:hover {
-  background: #a460d8;
-  box-shadow: 0 6px 24px rgba(183, 120, 232, 0.45);
+  background: #C8502B;
+  box-shadow: 0 6px 24px rgba(5, 150, 105, 0.45);
   transform: translateY(-1px);
 }
 
@@ -181,7 +181,7 @@ button[type="submit"]:active {
 }
 
 .signin-link a {
-  color: #B778E8;
+  color: #059669;
   text-decoration: none;
   font-weight: 600;
 }

@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PingMe — About</title>
+  <link rel="icon" type="image/png" href="../NavBar logos/ChatGPT Image Mar 26, 2026, 11_38_51 PM.png">
+  <link rel="stylesheet" href="../Homepage/navbar.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: #ffffff;
+      color: #1a1a1a;
+      overflow-x: hidden;
+    }
+
+    body::before,
+    body::after {
+      content: '';
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.3;
+      pointer-events: none;
+      z-index: 0;
+    }
+    body::before {
+      width: 600px; height: 600px;
+      background: #059669;
+      top: -150px; right: -150px;
+    }
+    body::after {
+      width: 450px; height: 450px;
+      background: #FDBA9A;
+      bottom: -100px; left: -100px;
+    }
+
+    .navbar-wrap {
+      position: fixed;
+      top: 1.5rem; left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      z-index: 100;
+    }
+
+    .page-wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 9rem 1.5rem 6rem;
+    }
+
+    /* ── Badge ── */
+    .badge {
+      display: inline-block;
+      background: rgba(5, 150, 105, 0.12);
+      color: #059669;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.35rem 1rem;
+      border-radius: 50px;
+      margin-bottom: 1.5rem;
+    }
+
+    /* ── Hero ── */
+    .about-hero {
+      text-align: center;
+      margin-bottom: 5rem;
+    }
+
+    .about-hero h1 {
+      font-size: clamp(2.2rem, 5vw, 3.4rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: 1.25rem;
+    }
+
+    .about-hero h1 span { color: #059669; }
+
+    .about-hero p {
+      font-size: 1.08rem;
+      color: #555;
+      line-height: 1.75;
+      max-width: 620px;
+      margin: 0 auto 2rem;
+    }
+
+    /* ── Section titles ── */
+    .section-title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+
+    .section-title span { color: #059669; }
+
+    .section-subtitle {
+      font-size: 0.95rem;
+      color: #666;
+      line-height: 1.6;
+      margin-bottom: 2.5rem;
+    }
+
+    /* ── Mission ── */
+    .mission {
+      background: rgba(5, 150, 105, 0.06);
+      border: 1px solid rgba(5, 150, 105, 0.18);
+      border-radius: 24px;
+      padding: 3rem;
+      margin-bottom: 5rem;
+      text-align: center;
+    }
+
+    .mission p {
+      font-size: 1.1rem;
+      color: #444;
+      line-height: 1.8;
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    .mission p strong { color: #059669; }
+
+    /* ── Feature grid ── */
+    .section { margin-bottom: 5rem; }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .feature-card {
+      background: rgba(255, 255, 255, 0.65);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(5, 150, 105, 0.2);
+      border-radius: 20px;
+      padding: 1.75rem;
+      box-shadow: 0 4px 24px rgba(5, 150, 105, 0.08);
+    }
+
+    .feature-icon {
+      width: 44px; height: 44px;
+      background: rgba(5, 150, 105, 0.12);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+    }
+
+    .feature-card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+
+    .feature-card p {
+      font-size: 0.85rem;
+      color: #777;
+      line-height: 1.6;
+    }
+
+    /* ── Tech stack ── */
+    .tech-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .tech-pill {
+      background: rgba(5, 150, 105, 0.1);
+      border: 1px solid rgba(5, 150, 105, 0.25);
+      color: #1a1a1a;
+      font-size: 0.88rem;
+      font-weight: 500;
+      padding: 0.45rem 1.1rem;
+      border-radius: 50px;
+    }
+
+    /* ── Team ── */
+    .team-grid {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .team-card {
+      flex: 1 1 180px;
+      background: rgba(255, 255, 255, 0.65);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(5, 150, 105, 0.2);
+      border-radius: 20px;
+      padding: 2rem 1.5rem;
+      text-align: center;
+      box-shadow: 0 4px 24px rgba(5, 150, 105, 0.08);
+    }
+
+    .team-avatar {
+      width: 60px; height: 60px;
+      background: linear-gradient(135deg, #059669, #FDBA9A);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin: 0 auto 1rem;
+    }
+
+    .team-card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .team-card p {
+      font-size: 0.82rem;
+      color: #888;
+    }
+
+    /* ── CTA ── */
+    .cta {
+      text-align: center;
+      background: linear-gradient(135deg, rgba(5, 150, 105, 0.1), rgba(212, 169, 245, 0.1));
+      border: 1px solid rgba(5, 150, 105, 0.2);
+      border-radius: 24px;
+      padding: 3.5rem 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .cta h2 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.75rem;
+    }
+
+    .cta h2 span { color: #059669; }
+
+    .cta p {
+      font-size: 1rem;
+      color: #666;
+      margin-bottom: 2rem;
+    }
+
+    .btn-primary {
+      background: #059669;
+      color: #fff;
+      padding: 0.85rem 2.25rem;
+      border-radius: 50px;
+      border: none;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 18px rgba(5, 150, 105, 0.35);
+      transition: background 0.3s, box-shadow 0.3s, transform 0.15s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-primary:hover {
+      background: #C8502B;
+      box-shadow: 0 6px 24px rgba(5, 150, 105, 0.45);
+      transform: translateY(-1px);
+    }
+
+    /* ── Footer ── */
+    .site-footer {
+      position: relative;
+      z-index: 1;
+      background: #0f1a0a;
+      color: #ccc;
+      padding: 4rem 2rem 1.5rem;
+      width: 100%;
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      max-width: 900px;
+      margin: 0 auto 3rem;
+      gap: 3rem;
+      flex-wrap: wrap;
+    }
+
+    .footer-brand h2 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #059669;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.02em;
+    }
+
+    .footer-brand p {
+      font-size: 0.88rem;
+      color: #888;
+      line-height: 1.7;
+      max-width: 220px;
+    }
+
+    .footer-links { display: flex; gap: 3rem; flex-wrap: wrap; }
+
+    .footer-col { display: flex; flex-direction: column; gap: 0.65rem; }
+
+    .footer-col h4 {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #059669;
+      margin-bottom: 0.25rem;
+    }
+
+    .footer-col a {
+      font-size: 0.88rem;
+      color: #888;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .footer-col a:hover { color: #fff; }
+
+    .footer-bottom {
+      max-width: 900px;
+      margin: 0 auto;
+      border-top: 1px solid rgba(128, 85, 160, 0.15);
+      padding-top: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      font-size: 0.78rem;
+      color: #555;
+    }
+
+    @media (max-width: 600px) {
+      .footer-inner { flex-direction: column; }
+      .footer-bottom { flex-direction: column; align-items: center; text-align: center; }
+      .mission { padding: 2rem 1.5rem; }
+      .cta { padding: 2.5rem 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+<ul class="sidebar">
+  <li onclick="hideSidebar()">
+    <svg xmlns="http://www.w3.org/2000/svg" height="34px" viewBox="0 -960 960 960" width="34px" fill="#000000"><path d="m256-200-56-56 224-224-224-224 56-56 224 224 224-224 56 56-224 224 224 224-56 56-224-224-224 224Z"/></svg>
+  </li>
+  <li><a href="../Homepage/index.html">Home</a></li>
+  <li><a href="#" onclick="goToMatch(event)">Match</a></li>
+  <li><a href="#" onclick="goToAccount(event)">Account</a></li>
+  <li><a href="about.html">About</a></li>
+  <li>
+    <div class="space_buttons">
+      <button class="btn-signin1" onclick="location.href='../Login/signin.html'">Sign In</button>
+    </div>
+  </li>
+</ul>
+
+<div class="navbar-wrap">
+  <header>
+    <nav>
+      <ul class="main-nav">
+        <li><img src="../NavBar logos/ChatGPT Image Mar 26, 2026, 11_38_51 PM.png" alt="PingMe" class="nav-logo"></li>
+        <li class="hideOnMobile"><a href="../Homepage/index.html">Home</a></li>
+        <li class="hideOnMobile"><a href="#" onclick="goToMatch(event)">Match</a></li>
+        <li class="hideOnMobile"><a href="#" onclick="goToAccount(event)">Account</a></li>
+        <li class="hideOnMobile"><a href="about.html">About</a></li>
+        <li>
+          <div class="space_buttons hideOnMobile">
+            <button class="btn-signin1" onclick="location.href='../Login/signin.html'">Sign In</button>
+          </div>
+        </li>
+        <li class="menu-button" onclick="showSidebar()">
+          <svg xmlns="http://www.w3.org/2000/svg" height="34px" viewBox="0 -960 960 960" width="34px" fill="#000000"><path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z"/></svg>
+        </li>
+      </ul>
+    </nav>
+  </header>
+</div>
+
+<div class="page-wrapper">
+
+  <!-- Hero -->
+  <div class="about-hero">
+    <div class="badge">Hack TUES 12 &mdash; Built in 28 hours</div>
+    <h1>Preserving knowledge,<br><span>one ping at a time</span></h1>
+    <p>PingMe connects curious travelers with Bulgaria's last living carriers of irreplaceable local knowledge — before it disappears forever.</p>
+  </div>
+
+  <!-- Mission -->
+  <div class="mission">
+    <p>Bulgaria's elderly <strong>knowledge carriers</strong> — herbalists, craftspeople, storytellers, and local legends — hold traditions that no book has ever captured. PingMe exists to make those connections happen <strong>before time runs out</strong>.</p>
+  </div>
+
+  <!-- What we built -->
+  <div class="section">
+    <div class="badge">What we built</div>
+    <h2 class="section-title">Features <span>so far</span></h2>
+    <p class="section-subtitle">Everything you need to discover, connect with, and learn from a local legend.</p>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🗺️</div>
+        <h3>Live Map</h3>
+        <p>Explore knowledge carriers across Bulgaria on an interactive map.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🤖</div>
+        <h3>AI Match</h3>
+        <p>Get matched to the perfect legend based on your interests using vector embeddings.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📅</div>
+        <h3>Book Sessions</h3>
+        <p>Reserve time with a local legend directly online in seconds.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⏳</div>
+        <h3>Extinction Timer</h3>
+        <p>See how many sessions remain before a legend's knowledge is lost forever.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📜</div>
+        <h3>Knowledge Docs</h3>
+        <p>AI-preserved documents that capture and archive each legend's knowledge.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎫</div>
+        <h3>Experience Passport</h3>
+        <p>Collect stamps from every session you complete on your journey.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tech stack -->
+  <div class="section">
+    <div class="badge">Under the hood</div>
+    <h2 class="section-title">Built <span>with</span></h2>
+    <p class="section-subtitle">A modern stack assembled in a single hackathon sprint.</p>
+    <div class="tech-list">
+      <span class="tech-pill">Node.js + Express</span>
+      <span class="tech-pill">Supabase (Postgres + Auth + Storage)</span>
+      <span class="tech-pill">pgvector</span>
+      <span class="tech-pill">Google Gemini Embeddings</span>
+      <span class="tech-pill">Vanilla JS</span>
+      <span class="tech-pill">CSS3</span>
+      <span class="tech-pill">HTML5</span>
+    </div>
+  </div>
+
+  <!-- Team -->
+  <div class="section">
+    <div class="badge">The people</div>
+    <h2 class="section-title">Our <span>team</span></h2>
+    <p class="section-subtitle">Three builders. Twenty-eight hours. One mission.</p>
+    <div class="team-grid">
+      <div class="team-card">
+        <div class="team-avatar">👤</div>
+        <h3>Niki</h3>
+        <p>Full-stack & backend</p>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar">👤</div>
+        <h3>Teammate 2</h3>
+        <p>Frontend & design</p>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar">👤</div>
+        <h3>Teammate 3</h3>
+        <p>Product & research</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta">
+    <h2>Ready to find your <span>legend</span>?</h2>
+    <p>Join PingMe and connect with knowledge that can't be Googled.</p>
+    <a class="btn-primary" href="../Login/signup.html">Create a free account</a>
+  </div>
+
+</div>
+
+<!-- Footer -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <h2>PingMe</h2>
+      <p>Stay connected, stay in the loop.<br>Real-time pings for real people.</p>
+    </div>
+    <div class="footer-links">
+      <div class="footer-col">
+        <h4>Product</h4>
+        <a href="../Homepage/index.html">Home</a>
+        <a href="#">Features</a>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <a href="about.html">About</a>
+      </div>
+      <div class="footer-col">
+        <h4>Account</h4>
+        <a href="../Login/signin.html">Sign In</a>
+        <a href="../Login/signup.html">Get Started</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>&copy; 2025 PingMe. All rights reserved.</span>
+    <span>Built with care &mdash; Hack TUES 12</span>
+  </div>
+</footer>
+
+<script>
+  function showSidebar() { document.querySelector('.sidebar').style.display = 'flex'; }
+  function hideSidebar() { document.querySelector('.sidebar').style.display = 'none'; }
+  window.addEventListener('resize', () => { if (window.innerWidth > 800) hideSidebar(); });
+  if (localStorage.getItem('token')) document.querySelectorAll('.btn-signin1').forEach(b => b.closest('li').style.display = 'none');
+  function goToAccount(e) {
+    e.preventDefault();
+    window.location.href = localStorage.getItem('token')
+      ? '../My Profile/my_profile.html'
+      : '../Login/signin.html';
+  }
+  function goToMatch(e) {
+    e.preventDefault();
+    window.location.href = localStorage.getItem('token')
+      ? '../Match/match.html'
+      : '../Login/signin.html';
+  }
+</script>
+
+</body>
+</html>

@@ -7,6 +7,10 @@ body {
   overflow-x: hidden;
 }
 
+a{
+  text-decoration: none;
+}
+
 body::before,
 body::after {
   content: '';
@@ -20,14 +24,14 @@ body::after {
 body::before {
   width: 600px;
   height: 600px;
-  background: #B778E8;
+  background: #C8502B;
   top: -150px;
   right: -150px;
 }
 body::after {
   width: 450px;
   height: 450px;
-  background: #d4a9f5;
+  background: #FDBA9A;
   bottom: -100px;
   left: -100px;
 }
@@ -61,8 +65,8 @@ body::after {
 
 .hero-badge {
   display: inline-block;
-  background: rgba(183, 120, 232, 0.12);
-  color: #B778E8;
+  background: rgba(5, 150, 105, 0.12);
+  color: #059669;
   font-size: 0.78rem;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -82,7 +86,7 @@ body::after {
 }
 
 .hero h2 span {
-  color: #B778E8;
+  color: #C8502B;
 }
 
 .hero p {
@@ -100,7 +104,7 @@ body::after {
 }
 
 .btn-primary {
-  background: #B778E8;
+  background: #059669;
   color: #fff;
   padding: 0.85rem 2.25rem;
   border-radius: 50px;
@@ -108,22 +112,22 @@ body::after {
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 4px 18px rgba(183, 120, 232, 0.35);
+  box-shadow: 0 4px 18px rgba(5, 150, 105, 0.35);
   transition: background 0.3s, box-shadow 0.3s, transform 0.15s;
 }
 
 .btn-primary:hover {
-  background: #a460d8;
-  box-shadow: 0 6px 24px rgba(183, 120, 232, 0.45);
+  background: #C8502B;
+  box-shadow: 0 6px 24px rgba(5, 150, 105, 0.45);
   transform: translateY(-1px);
 }
 
 .btn-secondary {
-  background: rgba(183, 120, 232, 0.1);
+  background: rgba(5, 150, 105, 0.1);
   color: #1a1a1a;
   padding: 0.85rem 2.25rem;
   border-radius: 50px;
-  border: 1px solid rgba(183, 120, 232, 0.25);
+  border: 1px solid rgba(5, 150, 105, 0.25);
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
@@ -131,7 +135,7 @@ body::after {
 }
 
 .btn-secondary:hover {
-  background: rgba(183, 120, 232, 0.2);
+  background: rgba(5, 150, 105, 0.2);
 }
 
 .features {
@@ -161,10 +165,10 @@ body::after {
   background: rgba(255, 255, 255, 0.65);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(183, 120, 232, 0.2);
+  border: 1px solid rgba(5, 150, 105, 0.2);
   border-radius: 20px;
   padding: 1.75rem;
-  box-shadow: 0 4px 24px rgba(183, 120, 232, 0.08);
+  box-shadow: 0 4px 24px rgba(5, 150, 105, 0.08);
 }
 
 .feature-card h3 {
@@ -183,7 +187,7 @@ body::after {
 .feature-icon {
   width: 44px;
   height: 44px;
-  background: rgba(183, 120, 232, 0.12);
+  background: rgba(5, 150, 105, 0.12);
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -205,7 +209,7 @@ body::after {
 .site-footer {
   position: relative;
   z-index: 1;
-  background: #17092d;
+  background: #0f1a0a;
   color: #ccc;
   padding: 4rem 2rem 1.5rem;
   width: 100%;
@@ -224,7 +228,7 @@ body::after {
 .footer-brand h2 {
   font-size: 1.6rem;
   font-weight: 700;
-  color: #B778E8;
+  color: #C8502B;
   margin-bottom: 0.75rem;
   letter-spacing: -0.02em;
 }
@@ -253,7 +257,7 @@ body::after {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: #B778E8;
+  color: #C8502B;
   margin-bottom: 0.25rem;
 }
 
