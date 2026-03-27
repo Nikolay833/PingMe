@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const supabase = require('../config/supabase');
-const { summarizeDescription } = require('../config/summarizer');
 const { generateGeminiEmbedding } = require('../config/vector');
 
 // POST /api/auth/signup
