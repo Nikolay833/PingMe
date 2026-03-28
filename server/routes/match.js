@@ -6,7 +6,6 @@ const { generateGeminiEmbedding } = require('../config/vector');
 
 router.get('/', authMiddleware, async (req, res) => {
   const userId = req.user.id;
-  console.log('[MATCH V5] Match request for user:', userId);
 
   try {
     let { data: userData, error: userError } = await supabase
@@ -18,7 +17,6 @@ router.get('/', authMiddleware, async (req, res) => {
     let embedding = userData?.embedding;
 
     if (!embedding) {
-      console.log('[MATCH V5] No embedding found. checking profiles bio...');
       const { data: profile } = await supabase
         .from('profiles')
         .select('bio')
@@ -26,7 +24,6 @@ router.get('/', authMiddleware, async (req, res) => {
         .single();
 
       if (profile?.bio) {
-        console.log('[MATCH V5] Generating on-the-fly...');
         const newEmbedding = await generateGeminiEmbedding(profile.bio);
 
         if (newEmbedding) {
@@ -35,7 +32,6 @@ router.get('/', authMiddleware, async (req, res) => {
             user_id: userId,
             embedding: newEmbedding
           }, { onConflict: 'user_id' });
-          console.log('[MATCH V5] Embedding generated and saved.');
         }
       }
     }
@@ -75,7 +71,6 @@ router.get('/', authMiddleware, async (req, res) => {
     res.json({ success: true, matches: matches || [] });
 
   } catch (error) {
-    console.error('[MATCH V5] Crash:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

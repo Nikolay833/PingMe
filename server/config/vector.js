@@ -10,8 +10,6 @@ async function generateGeminiEmbedding(text) {
 
   const model = 'gemini-embedding-001';
 
-  console.log(`[VECTOR V5] Generating embedding for text length: ${text.length} using model: ${model}`);
-
   try {
     const response = await ai.models.embedContent({
       model,
@@ -27,10 +25,8 @@ async function generateGeminiEmbedding(text) {
     }
 
     const embedding = response.embeddings[0].values;
-    console.log(`[VECTOR V5] Successfully generated embedding. Dimensions: ${embedding.length}`);
     return embedding;
   } catch (error) {
-    console.error('[VECTOR V5] Error details:', error);
     throw new Error(`Gemini Embedding Failed: ${error.message}`);
   }
 }

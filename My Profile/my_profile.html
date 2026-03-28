@@ -232,19 +232,14 @@
           body: formData
         });
         const data = await res.json();
-        if (!res.ok) { console.error('Upload failed:', data.error); return; }
-        console.log('Uploaded, URL:', data.url);
+        if (!res.ok) return;
 
-        const saveRes = await fetch(`${API}/api/profile/avatar`, {
+        await fetch(`${API}/api/profile/avatar`, {
           method: 'PATCH',
           headers: authHeaders(),
           body: JSON.stringify({ avatar_url: data.url })
         });
-        const saveData = await saveRes.json();
-        if (!saveRes.ok) console.error('Avatar save failed:', saveData.error);
-        else console.log('Avatar saved successfully');
       } catch (err) {
-        console.error('Avatar upload failed:', err);
       }
     });
 
@@ -293,7 +288,6 @@
         recvPanel.style.display = recvList.children.length > 0 ? 'block' : 'none';
         sentPanel.style.display = sentList.children.length > 0 ? 'block' : 'none';
       } catch (err) {
-        console.error('Failed to load notifications:', err);
       }
     }
 
@@ -306,8 +300,6 @@
           body: JSON.stringify({ status })
         });
         if (!res.ok) {
-          const err = await res.json();
-          console.error('PATCH failed:', err.error || JSON.stringify(err));
           btn.disabled = false;
           return;
         }
@@ -317,7 +309,6 @@
         await loadNotifications();
         await loadConnections();
       } catch (err) {
-        console.error('Failed to respond:', err);
         btn.disabled = false;
       }
     }
@@ -344,7 +335,6 @@
           list.appendChild(item);
         });
       } catch (err) {
-        console.error('Failed to load connections:', err);
       }
     }
 

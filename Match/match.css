@@ -90,57 +90,6 @@ body::after {
   transform: translateY(-1px);
 }
 
-.stats-row {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.25rem;
-  margin-bottom: 2.5rem;
-}
-
-.stat-card {
-  background: rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(5, 150, 105, 0.2);
-  border-radius: 20px;
-  padding: 1.5rem 1.25rem;
-  box-shadow: 0 4px 24px rgba(5, 150, 105, 0.08);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.3rem;
-}
-
-.stat-num {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #059669;
-  letter-spacing: -0.02em;
-}
-
-.stat-label {
-  font-size: 0.8rem;
-  color: #888;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  font-weight: 600;
-}
-
-.section-label {
-  font-size: 0.78rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: #059669;
-  margin-bottom: 1rem;
-}
-
-.match-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.25rem;
-}
-
 .match-card {
   background: rgba(255, 255, 255, 0.65);
   backdrop-filter: blur(24px);
@@ -224,53 +173,6 @@ body::after {
   transform: translateY(-1px);
 }
 
-.activity-list {
-  background: rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(5, 150, 105, 0.2);
-  border-radius: 20px;
-  padding: 1.25rem 1.5rem;
-  box-shadow: 0 4px 24px rgba(5, 150, 105, 0.08);
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-}
-
-.activity-item {
-  display: flex;
-  align-items: center;
-  gap: 0.9rem;
-  padding: 0.85rem 0;
-  border-bottom: 1px solid rgba(5, 150, 105, 0.1);
-}
-
-.activity-item:last-child { border-bottom: none; }
-
-.activity-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #059669;
-  flex-shrink: 0;
-}
-
-.activity-dot.faded { background: #ddd; }
-
-.activity-text {
-  flex: 1;
-  font-size: 0.9rem;
-  color: #444;
-}
-
-.activity-text strong { color: #1a1a1a; }
-
-.activity-time {
-  font-size: 0.78rem;
-  color: #aaa;
-  white-space: nowrap;
-}
-
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -311,12 +213,6 @@ body::after {
   line-height: 1.6;
 }
 
-@media (max-width: 700px) {
-  .stats-row { grid-template-columns: repeat(2, 1fr); }
-  .match-grid { grid-template-columns: 1fr; }
-}
-
 @media (max-width: 450px) {
-  .stats-row { grid-template-columns: 1fr 1fr; }
   .dash-header { flex-direction: column; align-items: flex-start; }
 }

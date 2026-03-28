@@ -7,10 +7,6 @@ router.post('/signup', async (req, res) => {
   const { firstName, surname, email, password, country, city, phone, description } = req.body;
   const name = `${firstName} ${surname}`.trim();
 
-  console.log('--- SIGNUP ATTEMPT ---');
-  console.log('Email:', email);
-  console.log('Name:', name);
-
   const { data: authData, error: authError } = await supabase.auth.admin.createUser({
     email,
     password,
@@ -19,12 +15,10 @@ router.post('/signup', async (req, res) => {
   });
 
   if (authError) {
-    console.error('[AUTH ERROR]:', authError.status, authError.message);
     return res.status(400).json({ error: authError.message });
   }
 
   const userId = authData.user.id;
-  console.log('[AUTH SUCCESS]: User ID created ->', userId);
 
   const { error: profileError } = await supabase.from('profiles').insert({
     id: userId,
@@ -37,16 +31,10 @@ router.post('/signup', async (req, res) => {
   });
 
   if (profileError) {
-    console.error('[PROFILE ERROR]:', profileError.code, profileError.message);
-    
-    if (profileError.code === '23505') {
-        console.log('[INFO]: Profile already exists (possibly created by a DB trigger). Continuing...');
-    } else {
-        await supabase.auth.admin.deleteUser(userId);
-        return res.status(400).json({ error: profileError.message });
+    if (profileError.code !== '23505') {
+      await supabase.auth.admin.deleteUser(userId);
+      return res.status(400).json({ error: profileError.message });
     }
-  } else {
-    console.log('[PROFILE SUCCESS]: Profile row inserted.');
   }
 
   let aiWarning = null;
@@ -58,21 +46,17 @@ router.post('/signup', async (req, res) => {
           user_id: userId,
           embedding: embedding
         });
-        console.log('[AI SUCCESS]: Embedding saved.');
       }
     } catch (aiErr) {
-      console.error('[AI ERROR]:', aiErr.message);
       aiWarning = "Profile created, but matching service is temporarily unavailable.";
     }
   }
 
   const { data: sessionData, error: loginError } = await supabase.auth.signInWithPassword({ email, password });
   if (loginError) {
-    console.error('[LOGIN ERROR]:', loginError.message);
     return res.status(400).json({ error: loginError.message });
   }
 
-  console.log('[SIGNUP COMPLETE]: Success.');
   res.json({
     success: true,
     token: sessionData.session.access_token,

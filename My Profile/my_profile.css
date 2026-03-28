@@ -58,17 +58,6 @@ body::after {
     0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
-.logo {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 1.25rem;
-}
-
-.card-logo {
-  height: 48px;
-  width: auto;
-}
-
 .avatar-wrap {
   display: flex;
   flex-direction: column;
@@ -309,12 +298,6 @@ button[type="submit"]:active {
 .notif-accept  { background: #059669; color: #fff; }
 .notif-decline { background: rgba(229,62,62,0.12); color: #e53e3e; }
 .notif-view    { background: rgba(5,150,105,0.1); color: #059669; }
-
-.notif-done {
-  font-size: 0.85rem;
-  color: #888;
-  font-style: italic;
-}
 
 .conn-btn {
   position: fixed;

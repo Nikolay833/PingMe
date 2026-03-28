@@ -72,8 +72,7 @@ nav a, .sidebar a {
 
 nav a:hover, .sidebar a:hover { color: #059669; }
 
-.btn-signin1,
-.btn-signin2 {
+.btn-signin1 {
   padding: 0.8rem 2rem;
   border-radius: 50px;
   border: none;
@@ -81,9 +80,6 @@ nav a:hover, .sidebar a:hover { color: #059669; }
   font-weight: 500;
   cursor: pointer;
   transition: background 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.btn-signin1 {
   background: #059669;
   color: #fff;
   box-shadow: 0 4px 18px rgba(5, 150, 105, 0.35);
@@ -94,23 +90,13 @@ nav a:hover, .sidebar a:hover { color: #059669; }
   box-shadow: 0 6px 24px rgba(5, 150, 105, 0.45);
 }
 
-.btn-signin2 {
-  background: rgba(5, 150, 105, 0.12);
-  color: #1a1a1a;
-}
-
-.btn-signin2:hover {
-  background: rgba(5, 150, 105, 0.25);
-}
-
 .space_buttons { display: flex; gap: 1rem; }
 
 .sidebar .space_buttons {
   flex-wrap: wrap;
 }
 
-.sidebar .btn-signin1,
-.sidebar .btn-signin2 {
+.sidebar .btn-signin1 {
   flex: 1 1 auto;
   min-width: 0;
   padding: 0.8rem 1rem;
@@ -130,8 +116,7 @@ nav a:hover, .sidebar a:hover { color: #059669; }
 
   .menu-button { display: block; }
 
-  .sidebar .btn-signin1,
-  .sidebar .btn-signin2 { display: inline-block; }
+  .sidebar .btn-signin1 { display: inline-block; }
 }
 
 @media (max-width: 400px) {

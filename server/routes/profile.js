@@ -16,18 +16,15 @@ router.get('/', authMiddleware, async (req, res) => {
 });
 
 router.get('/:userId', async (req, res) => {
-  console.log('[PROFILE] Public fetch for userId:', req.params.userId);
   const [{ data, error }, { data: authUser }] = await Promise.all([
     supabase.from('profiles').select('name, bio, location, avatar_url, phone, points').eq('id', req.params.userId).maybeSingle(),
     supabase.auth.admin.getUserById(req.params.userId)
   ]);
 
   if (error) {
-    console.error('[PROFILE] Supabase error:', error.message);
     return res.status(500).json({ error: error.message });
   }
   if (!data) {
-    console.warn('[PROFILE] No profile found for:', req.params.userId);
     return res.status(404).json({ error: 'Profile not found' });
   }
   res.json({ ...data, email: authUser?.user?.email || '' });
@@ -37,8 +34,6 @@ router.patch('/', authMiddleware, async (req, res) => {
   const { name, bio, location } = req.body;
   const userId = req.user.id;
 
-  console.log('[PROFILE V5] Update request for user:', userId);
-
   const { error: profileError } = await supabase
     .from('profiles')
     .update({ name, bio, location })
@@ -47,7 +42,6 @@ router.patch('/', authMiddleware, async (req, res) => {
   if (profileError) return res.status(400).json({ error: profileError.message });
 
   if (bio?.trim()) {
-    console.log(`[PROFILE V5] Updating AI for user ${userId}...`);
     (async () => {
       try {
         const embedding = await generateGeminiEmbedding(bio);
@@ -57,10 +51,8 @@ router.patch('/', authMiddleware, async (req, res) => {
             user_id: userId,
             embedding: embedding
           }, { onConflict: 'user_id' });
-          console.log('[PROFILE V5] AI updated (embedding only).');
         }
       } catch (err) {
-        console.error('[PROFILE V5] AI update failed:', err);
       }
     })();
   }
