@@ -16,7 +16,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname)));
 
-app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'Homepage', 'index.html')));
+app.get('/', (req, res) => res.redirect('/Homepage/index.html'));
 
 app.use('/api/auth',          authRouter);
 app.use('/api/profile',       profileRouter);
