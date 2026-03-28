@@ -4,7 +4,6 @@ const supabase = require('../config/supabase');
 const { authMiddleware } = require('../middleware/auth');
 const { generateGeminiEmbedding } = require('../config/vector');
 
-// GET /api/profile
 router.get('/', authMiddleware, async (req, res) => {
   const { data, error } = await supabase
     .from('profiles')
@@ -16,7 +15,6 @@ router.get('/', authMiddleware, async (req, res) => {
   res.json({ ...data, email: req.user.email });
 });
 
-// GET /api/profile/:userId — public profile view
 router.get('/:userId', async (req, res) => {
   console.log('[PROFILE] Public fetch for userId:', req.params.userId);
   const [{ data, error }, { data: authUser }] = await Promise.all([
@@ -35,7 +33,6 @@ router.get('/:userId', async (req, res) => {
   res.json({ ...data, email: authUser?.user?.email || '' });
 });
 
-// PATCH /api/profile
 router.patch('/', authMiddleware, async (req, res) => {
   const { name, bio, location } = req.body;
   const userId = req.user.id;
@@ -71,7 +68,6 @@ router.patch('/', authMiddleware, async (req, res) => {
   res.json({ success: true });
 });
 
-// PATCH /api/profile/avatar
 router.patch('/avatar', authMiddleware, async (req, res) => {
   const { avatar_url } = req.body;
   const { error } = await supabase
@@ -83,7 +79,6 @@ router.patch('/avatar', authMiddleware, async (req, res) => {
   res.json({ success: true });
 });
 
-// POST /api/profile/:userId/rate — rate a connected user (0-5 stars)
 router.post('/:userId/rate', authMiddleware, async (req, res) => {
   const { stars } = req.body;
   const raterId   = req.user.id;
@@ -93,12 +88,10 @@ router.post('/:userId/rate', authMiddleware, async (req, res) => {
   if (!Number.isInteger(stars) || stars < 0 || stars > 5)
     return res.status(400).json({ error: 'Stars must be an integer 0–5' });
 
-  // Must be connected
   const { data: rater } = await supabase.from('profiles').select('connections').eq('id', raterId).single();
   const connected = (rater?.connections || []).some(c => c.user_id === targetId);
   if (!connected) return res.status(403).json({ error: 'Must be connected to rate' });
 
-  // Load target profile
   const { data: target, error: tErr } = await supabase
     .from('profiles').select('points, ratings').eq('id', targetId).single();
   if (tErr) return res.status(500).json({ error: tErr.message });

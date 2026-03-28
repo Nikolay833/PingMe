@@ -3,7 +3,6 @@ const router = express.Router();
 const supabase = require('../config/supabase');
 const { generateGeminiEmbedding } = require('../config/vector');
 
-// POST /api/auth/signup
 router.post('/signup', async (req, res) => {
   const { firstName, surname, email, password, country, city, phone, description } = req.body;
   const name = `${firstName} ${surname}`.trim();
@@ -12,7 +11,6 @@ router.post('/signup', async (req, res) => {
   console.log('Email:', email);
   console.log('Name:', name);
 
-  // 1. Create the user in Supabase Auth
   const { data: authData, error: authError } = await supabase.auth.admin.createUser({
     email,
     password,
@@ -28,9 +26,6 @@ router.post('/signup', async (req, res) => {
   const userId = authData.user.id;
   console.log('[AUTH SUCCESS]: User ID created ->', userId);
 
-  // 2. Create the profile
-  // Note: Check if you have a database trigger in Supabase that already handles this!
-  // If you have a trigger, this manual insert might cause a "duplicate key" error.
   const { error: profileError } = await supabase.from('profiles').insert({
     id: userId,
     role: 'traveler',
@@ -44,11 +39,9 @@ router.post('/signup', async (req, res) => {
   if (profileError) {
     console.error('[PROFILE ERROR]:', profileError.code, profileError.message);
     
-    // If it's a duplicate key error on 'id', it means a trigger already created the profile
-    if (profileError.code === '23505') { 
+    if (profileError.code === '23505') {
         console.log('[INFO]: Profile already exists (possibly created by a DB trigger). Continuing...');
     } else {
-        // For other errors, cleanup the auth user so they can try again
         await supabase.auth.admin.deleteUser(userId);
         return res.status(400).json({ error: profileError.message });
     }
@@ -56,7 +49,6 @@ router.post('/signup', async (req, res) => {
     console.log('[PROFILE SUCCESS]: Profile row inserted.');
   }
 
-  // 3. Generate Embeddings
   let aiWarning = null;
   if (description?.trim()) {
     try {
@@ -74,7 +66,6 @@ router.post('/signup', async (req, res) => {
     }
   }
 
-  // 4. Sign in to get a session token
   const { data: sessionData, error: loginError } = await supabase.auth.signInWithPassword({ email, password });
   if (loginError) {
     console.error('[LOGIN ERROR]:', loginError.message);
@@ -90,7 +81,6 @@ router.post('/signup', async (req, res) => {
   });
 });
 
-// POST /api/auth/login
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
   const { data, error } = await supabase.auth.signInWithPassword({ email, password });

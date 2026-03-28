@@ -41,13 +41,11 @@ body::after {
   padding: 7rem 1.5rem 4rem;
 }
 
-/* ── Dashboard container ── */
 .dashboard {
   width: 100%;
   max-width: 960px;
 }
 
-/* ── Dash header ── */
 .dash-header {
   display: flex;
   align-items: flex-end;
@@ -70,7 +68,6 @@ body::after {
   margin-top: 0.25rem;
 }
 
-/* ── Accent button ── */
 .btn-accent {
   display: inline-flex;
   align-items: center;
@@ -93,7 +90,6 @@ body::after {
   transform: translateY(-1px);
 }
 
-/* ── Stats row ── */
 .stats-row {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -130,7 +126,6 @@ body::after {
   font-weight: 600;
 }
 
-/* ── Section label ── */
 .section-label {
   font-size: 0.78rem;
   font-weight: 700;
@@ -140,7 +135,6 @@ body::after {
   margin-bottom: 1rem;
 }
 
-/* ── Match grid ── */
 .match-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -230,7 +224,6 @@ body::after {
   transform: translateY(-1px);
 }
 
-/* ── Activity list ── */
 .activity-list {
   background: rgba(255, 255, 255, 0.65);
   backdrop-filter: blur(24px);
@@ -278,7 +271,6 @@ body::after {
   white-space: nowrap;
 }
 
-/* ── Empty state ── */
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -319,7 +311,6 @@ body::after {
   line-height: 1.6;
 }
 
-/* ── Responsive ── */
 @media (max-width: 700px) {
   .stats-row { grid-template-columns: repeat(2, 1fr); }
   .match-grid { grid-template-columns: 1fr; }

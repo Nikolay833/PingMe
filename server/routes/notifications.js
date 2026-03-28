@@ -4,7 +4,6 @@ const supabase = require('../config/supabase');
 const { authMiddleware } = require('../middleware/auth');
 const { randomUUID } = require('crypto');
 
-// GET /api/notifications/all — all notifications (sent + received) for the logged-in user
 router.get('/all', authMiddleware, async (req, res) => {
   const { data, error } = await supabase
     .from('profiles')
@@ -16,7 +15,6 @@ router.get('/all', authMiddleware, async (req, res) => {
   res.json(data.notifications || []);
 });
 
-// GET /api/notifications/connections — accepted connections
 router.get('/connections', authMiddleware, async (req, res) => {
   const { data, error } = await supabase
     .from('profiles')
@@ -28,7 +26,6 @@ router.get('/connections', authMiddleware, async (req, res) => {
   res.json(data.connections || []);
 });
 
-// POST /api/notifications — send a connect request
 router.post('/', authMiddleware, async (req, res) => {
   const { recipient_id } = req.body;
   const sender_id = req.user.id;
@@ -37,7 +34,6 @@ router.post('/', authMiddleware, async (req, res) => {
   if (!recipient_id) return res.status(400).json({ error: 'recipient_id required' });
   if (recipient_id === sender_id) return res.status(400).json({ error: 'Cannot connect with yourself' });
 
-  // Load both profiles
   const [{ data: recipientData, error: rErr }, { data: senderData, error: sErr }] = await Promise.all([
     supabase.from('profiles').select('notifications, name').eq('id', recipient_id).single(),
     supabase.from('profiles').select('notifications').eq('id', sender_id).single()
@@ -48,17 +44,14 @@ router.post('/', authMiddleware, async (req, res) => {
   const recipientNotifs = recipientData.notifications || [];
   const senderNotifs    = senderData.notifications || [];
 
-  // Prevent duplicate pending
   const duplicate = recipientNotifs.find(n => n.sender_id === sender_id && n.status === 'pending');
   if (duplicate) return res.status(409).json({ error: 'Request already sent' });
 
   const id = randomUUID();
   const created_at = new Date().toISOString();
 
-  // Add incoming entry to recipient
   recipientNotifs.push({ id, sender_id, sender_name, type: 'received', status: 'pending', created_at });
 
-  // Add outgoing entry to sender
   senderNotifs.push({ id, recipient_id, recipient_name: recipientData.name || 'Someone', type: 'sent', status: 'pending', created_at });
 
   await Promise.all([
@@ -69,7 +62,6 @@ router.post('/', authMiddleware, async (req, res) => {
   res.json({ success: true });
 });
 
-// PATCH /api/notifications/:id — accept or decline
 router.patch('/:id', authMiddleware, async (req, res) => {
   const { status } = req.body;
   if (!['accepted', 'declined'].includes(status)) {
@@ -79,7 +71,6 @@ router.patch('/:id', authMiddleware, async (req, res) => {
   const recipientId = req.user.id;
   const notifId = req.params.id;
 
-  // Load recipient's profile
   const { data: recipientData, error } = await supabase
     .from('profiles')
     .select('notifications, connections, name')
@@ -94,12 +85,10 @@ router.patch('/:id', authMiddleware, async (req, res) => {
 
   const senderId = notif.sender_id;
 
-  // Update status in recipient's notifications
   const updatedRecipientNotifs = recipientNotifs.map(n =>
     n.id === notifId ? { ...n, status } : n
   );
 
-  // Load sender's profile to update their sent request status
   const { data: senderData } = await supabase
     .from('profiles')
     .select('notifications, connections')
@@ -115,7 +104,6 @@ router.patch('/:id', authMiddleware, async (req, res) => {
     supabase.from('profiles').update({ notifications: updatedSenderNotifs }).eq('id', senderId)
   ];
 
-  // If accepted — add each other to connections
   if (status === 'accepted') {
     const now = new Date().toISOString();
 

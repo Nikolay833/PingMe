@@ -50,7 +50,6 @@
 
 <div class="card">
 
-  <!-- Avatar -->
   <div class="avatar-wrap">
     <div class="avatar" id="avatar-circle">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
@@ -80,7 +79,6 @@
 
   <button class="btn-connect" id="connect-btn" onclick="sendConnect()" style="display:none">Connect</button>
 
-  <!-- Rating UI (only shown when connected) -->
   <div id="rating-section" style="display:none; margin-bottom:0.6rem;">
     <p style="font-size:0.8rem; color:#888; text-align:center; margin-bottom:0.4rem;">Rate this person</p>
     <div id="stars" style="display:flex; justify-content:center; gap:0.4rem; font-size:1.6rem; cursor:pointer;">
@@ -174,7 +172,6 @@
       document.getElementById('profile-handle').textContent = '@' + (data.name || 'unknown').toLowerCase().replace(/\s+/g, '');
       document.title = `PingMe — ${data.name || 'Profile'}`;
 
-      // Tag
       const pts = data.points || 0;
       const tag = getTag(pts);
       const tagEl = document.getElementById('profile-tag');
@@ -191,7 +188,6 @@
         document.getElementById('avatar-circle').querySelector('svg').style.display = 'none';
       }
 
-      // Check connection status
       if (token) {
         const connRes  = await fetch(`${API}/api/notifications/connections`, { headers: authHeaders() });
         const connData = await connRes.json();

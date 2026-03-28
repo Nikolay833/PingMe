@@ -49,16 +49,13 @@
 
   <div class="card">
 
-    <!-- Avatar -->
     <div class="avatar-wrap">
       <div class="avatar" title="Change photo">
-        <!-- Default person icon -->
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
              stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="8" r="4"/>
           <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
         </svg>
-        <!-- Populated when user picks a file -->
         <img id="avatar-img" alt="Profile photo" />
       </div>
       <span class="avatar-hint">Change photo</span>
@@ -103,19 +100,16 @@
 
   </div>
 
-  <!-- Incoming connection requests -->
   <div class="notif-panel" id="notif-panel" style="display:none">
     <h3 class="notif-title">🔔 Connection Requests</h3>
     <div id="notif-list"></div>
   </div>
 
-  <!-- Sent requests status -->
   <div class="notif-panel" id="sent-panel" style="display:none">
     <h3 class="notif-title">📤 Sent Requests</h3>
     <div id="sent-list"></div>
   </div>
 
-  <!-- Connections button (top-right) -->
   <button class="conn-btn" id="conn-btn" onclick="toggleConnPopup()">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
       <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
@@ -125,13 +119,11 @@
     </svg>
   </button>
 
-  <!-- Connections popup -->
   <div class="conn-popup" id="conn-popup">
     <h4>🤝 Your Connections</h4>
     <div id="conn-popup-list"><p class="conn-popup-empty">No connections yet.</p></div>
   </div>
 
-  <!-- Toast -->
   <div class="toast" id="toast"></div>
 
   <script>
@@ -156,7 +148,6 @@
       return               { label: 'Newcomer',   emoji: '🌱', color: '#65A30D' };
     }
 
-    // Load profile on page open
     async function loadProfile() {
       try {
         const res  = await fetch(`${API}/api/profile`, { headers: authHeaders() });
@@ -189,11 +180,9 @@
           avatarWrap.querySelector('svg').style.display = 'none';
         }
       } catch (err) {
-        console.error('Failed to load profile:', err);
       }
     }
 
-    // Save changes
     document.querySelector('form').addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = e.target.querySelector('button');
@@ -219,7 +208,6 @@
       }
     });
 
-    // Avatar upload
     const avatarWrap  = document.querySelector('.avatar');
     const avatarInput = document.getElementById('avatar-input');
     const avatarImg   = document.getElementById('avatar-img');
@@ -230,12 +218,10 @@
       const file = avatarInput.files[0];
       if (!file) return;
 
-      // Show preview immediately
       avatarImg.src = URL.createObjectURL(file);
       avatarImg.style.display = 'block';
       avatarWrap.querySelector('svg').style.display = 'none';
 
-      // Upload to server
       try {
         const formData = new FormData();
         formData.append('photo', file);
@@ -249,7 +235,6 @@
         if (!res.ok) { console.error('Upload failed:', data.error); return; }
         console.log('Uploaded, URL:', data.url);
 
-        // Save URL to profile
         const saveRes = await fetch(`${API}/api/profile/avatar`, {
           method: 'PATCH',
           headers: authHeaders(),

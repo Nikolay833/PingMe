@@ -6,14 +6,13 @@ const { authMiddleware } = require('../middleware/auth');
 
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
+  limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     if (file.mimetype.startsWith('image/')) cb(null, true);
     else cb(new Error('Only image files are allowed'));
   }
 });
 
-// POST /api/upload
 router.post('/', authMiddleware, upload.single('photo'), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No file provided' });
 

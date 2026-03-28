@@ -1,21 +1,14 @@
 const { GoogleGenAI } = require('@google/genai');
 
-/**
- * Generates vector embeddings for the given text using Google Gemini API.
- * Uses the @google/genai library as requested.
- * Matches the vector(64) requirement of the database.
- */
 async function generateGeminiEmbedding(text) {
   const apiKey = process.env.VECTOR_API_KEY;
   if (!apiKey) {
     throw new Error('VECTOR_API_KEY is not defined in environment variables');
   }
 
-  // Use the standard initialization
   const ai = new GoogleGenAI({ apiKey });
 
-  // Reverting to the model that was confirmed reachable in your environment
-  const model = 'gemini-embedding-001'; 
+  const model = 'gemini-embedding-001';
 
   console.log(`[VECTOR V5] Generating embedding for text length: ${text.length} using model: ${model}`);
 

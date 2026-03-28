@@ -4,15 +4,11 @@ const supabase = require('../config/supabase');
 const { authMiddleware } = require('../middleware/auth');
 const { generateGeminiEmbedding } = require('../config/vector');
 
-/**
- * GET /api/match
- */
 router.get('/', authMiddleware, async (req, res) => {
   const userId = req.user.id;
   console.log('[MATCH V5] Match request for user:', userId);
 
   try {
-    // 1. Get embedding (Using simple table name, library handles quoting)
     let { data: userData, error: userError } = await supabase
       .from('AI_description')
       .select('embedding')
@@ -21,7 +17,6 @@ router.get('/', authMiddleware, async (req, res) => {
 
     let embedding = userData?.embedding;
 
-    // 2. Fallback to bio generation
     if (!embedding) {
       console.log('[MATCH V5] No embedding found. checking profiles bio...');
       const { data: profile } = await supabase
@@ -49,7 +44,6 @@ router.get('/', authMiddleware, async (req, res) => {
       return res.status(404).json({ error: 'Please update your bio in "My Profile" first.' });
     }
 
-    // 3. Search
     const { data: matches, error: matchError } = await supabase.rpc('match_users', {
       query_embedding: embedding,
       match_threshold: 0.1,
@@ -59,7 +53,6 @@ router.get('/', authMiddleware, async (req, res) => {
 
     if (matchError) return res.status(500).json({ error: matchError.message });
 
-    // Enrich matches with bio and location from profiles
     if (matches && matches.length > 0) {
       const userIds = matches.map(m => m.user_id);
       const { data: profiles } = await supabase
