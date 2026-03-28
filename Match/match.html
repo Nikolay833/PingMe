@@ -128,7 +128,7 @@
     btn.disabled = true;
     btn.textContent = 'Sending...';
     try {
-      const res = await fetch('http://localhost:3000/api/notifications', {
+      const res = await fetch('https://pingme-production-d18b.up.railway.app/api/notifications', {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({ recipient_id: recipientId })
@@ -159,7 +159,7 @@
     matchBtn.innerHTML = 'Finding...';
 
     try {
-      const res = await fetch('http://localhost:3000/api/match', {
+      const res = await fetch('https://pingme-production-d18b.up.railway.app/api/match', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();
